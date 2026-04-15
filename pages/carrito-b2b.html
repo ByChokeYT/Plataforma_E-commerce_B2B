@@ -1,0 +1,88 @@
+<!-- ══════════════════════════════════════════════════════
+     pages/carrito-b2b.html — Vista: Carrito / Orden al Mayor
+     Cargado por router.js en navigate('cart')
+     Inyectado en: #page-slot (index.html)
+     ══════════════════════════════════════════════════════ -->
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- ─── Lista de productos en el carrito ─── -->
+    <div class="lg:col-span-2 space-y-4" id="cart-items">
+        <!-- Populated by renderCart() in app.js -->
+    </div>
+
+    <!-- ─── Panel lateral: Resumen + Crédito ─── -->
+    <aside class="space-y-5 animate-enter-right">
+
+        <!-- Resumen de Orden -->
+        <div class="bg-white p-7 rounded-3xl border border-slate-200/60 shadow-sm">
+            <h3 class="font-bold text-sm mb-5 text-slate-900 flex items-center gap-2">
+                <i data-lucide="receipt" size="16" class="text-blue-500"></i>
+                Resumen de Orden
+            </h3>
+
+            <div class="space-y-3 text-xs mb-6">
+                <div class="flex justify-between text-slate-400">
+                    <span>Subtotal</span>
+                    <span class="font-semibold text-slate-800" id="summary-subtotal">$0.00</span>
+                </div>
+                <div class="flex justify-between text-blue-600 font-semibold bg-blue-50 px-3 py-2 rounded-xl border border-blue-100/50">
+                    <span class="flex items-center gap-1">
+                        <i data-lucide="trending-down" size="11"></i> Ahorro B2B
+                    </span>
+                    <span id="summary-savings">-$0.00</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>IVA (13%)</span>
+                    <span id="summary-tax">$0.00</span>
+                </div>
+                <div class="pt-3 border-t border-slate-100 flex justify-between items-baseline">
+                    <span class="text-slate-900 font-bold">Total</span>
+                    <span class="text-xl font-bold text-slate-900" id="summary-total">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <button
+                id="checkout-btn"
+                onclick="handleCheckout()"
+                class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-xs
+                       hover:bg-blue-700 active:scale-[0.98] transition-all
+                       shadow-sm shadow-blue-500/20 mb-3 flex items-center justify-center gap-2">
+                <i data-lucide="check-circle" size="14"></i>
+                Finalizar Pedido
+            </button>
+
+            <button
+                onclick="sendWhatsAppOrder()"
+                class="w-full bg-emerald-500 text-white py-3 rounded-xl font-bold text-xs
+                       hover:bg-emerald-600 active:scale-[0.98] transition-all
+                       flex items-center justify-center gap-2 shadow-sm shadow-emerald-500/20">
+                <i data-lucide="message-circle" size="14"></i>
+                Negociar por WhatsApp
+            </button>
+        </div>
+
+        <!-- Línea de Crédito Corporativo -->
+        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200/50">
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Línea de Crédito</p>
+                <span class="text-xs font-bold text-blue-600" id="credit-percent">0%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5 mb-4 overflow-hidden">
+                <div id="credit-bar" class="bg-blue-600 h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between text-xs font-bold text-slate-500">
+                <span class="flex items-center gap-1">
+                    <i data-lucide="minus-circle" size="10" class="text-slate-400"></i>
+                    <span id="credit-used">$0</span>
+                </span>
+                <span class="flex items-center gap-1">
+                    <span id="credit-limit">$0</span>
+                    <i data-lucide="wallet" size="10" class="text-slate-400"></i>
+                </span>
+            </div>
+        </div>
+
+    </aside>
+</div>

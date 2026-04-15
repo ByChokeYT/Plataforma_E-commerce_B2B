@@ -1,0 +1,89 @@
+/* ═══════════════════════════════════════════════════════
+   variables.css — Design Tokens B2B Core
+   Contiene: colores, fuentes, radios, transiciones
+   Importado en: index.html (antes que global.css)
+   ═══════════════════════════════════════════════════════ */
+
+/* === Google Fonts === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+/* ─── Modo Claro (por defecto) ─── */
+:root {
+    /* Colores primarios - Refinados */
+    --primary:        hsl(210, 100%, 45%);   /* Apple Blue Vibrant */
+    --primary-glass:  hsla(210, 100%, 45%, 0.1);
+    --primary-hover:  hsl(210, 100%, 50%);
+    
+    --danger:         hsl(2, 100%, 60%);
+    --success:        hsl(135, 59%, 49%);
+    --warning:        hsl(35, 100%, 52%);
+
+    /* Fondos - Profundidad Luxury */
+    --bg-main:    hsl(240, 15%, 98%);        /* Slightly cleaner base */
+    --bg-card:    hsl(0, 0%, 100%);
+    --bg-sidebar: hsla(0, 0%, 100%, 0.85);
+    
+    /* Tipografía - Aumento de Contraste AAA */
+    --text-main:  hsl(240, 10%, 10%);        /* Deep Black/Blue */
+    --text-body:  hsl(240, 8%, 25%);         /* Much darker for readability */
+    --text-muted: hsl(240, 6%, 45%);         /* Darker muted text */
+
+    /* Bordes y efectos - Ultra Thin but Visible */
+    --border:        hsla(240, 10%, 10%, 0.08);
+    --border-glass:  hsla(0, 0%, 0%, 0.05);
+    --ring-focus:    hsla(210, 100%, 45%, 0.2);
+
+    /* Radios - Smooth Corner Overrides */
+    --radius-full: 9999px;
+    --radius-2xl: 24px;
+    --radius-xl:  16px;
+    --radius-lg:  12px;
+    --radius-sm:  8px;
+
+    /* Transiciones Luxury */
+    --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Sombras - More defined Depth */
+    --shadow-sm:  0 2px 8px hsla(240, 10%, 10%, 0.04);
+    --shadow-md:  0 12px 36px hsla(240, 10%, 10%, 0.06);
+    --shadow-lg:  0 30px 60px hsla(240, 10%, 10%, 0.12);
+}
+
+/* ─── Modo Oscuro — Deep Universe ─── */
+[data-theme="dark"] {
+    --primary:       hsl(210, 100%, 58%);
+    --primary-glass: hsla(210, 100%, 58%, 0.15);
+    
+    --bg-main:       hsl(240, 10%, 3%);      /* True dark-ish bg */
+    --bg-card:       hsl(240, 10%, 6%);      /* Slightly lighter card */
+    --bg-sidebar:    hsla(240, 10%, 4%, 0.85);
+
+    /* Mesh Dark */
+    --mesh-1: hsla(210, 100%, 20%, 0.2);
+    --mesh-2: hsla(240, 50%, 10%, 0.3);
+    
+    --text-main:     hsl(0, 0%, 96%);
+    --text-body:     hsl(240, 5%, 70%);
+    --text-muted:    hsl(240, 4%, 40%);
+    
+    --border:        hsla(0, 0%, 100%, 0.08);
+    --border-glass:  hsla(0, 0%, 100%, 0.05);
+    
+    --shadow-sm:     0 2px 8px hsla(0, 0%, 0%, 0.4);
+    --shadow-md:     0 8px 32px hsla(0, 0%, 0%, 0.6);
+    --shadow-lg:     0 20px 50px hsla(0, 0%, 0%, 0.8);
+}
+
+/* ─── Tipografía base ─── */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-body);
+    font-size: 14px;
+    line-height: 1.47059;
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}

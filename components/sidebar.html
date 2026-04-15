@@ -1,0 +1,77 @@
+<!-- ══════════════════════════════════════════════════════
+     components/sidebar.html — Barra de navegación lateral
+     Cargado UNA VEZ por router.js al hacer login.
+     Inyectado en: #sidebar-slot (index.html)
+     ══════════════════════════════════════════════════════ -->
+
+<aside class="w-56 glass text-slate-800 flex flex-col h-screen fixed left-0 top-0 z-50 transition-all duration-500 overflow-hidden" id="sidebar">
+    
+    <!-- Ultra-subtle glow at the top -->
+    <div class="absolute -top-24 -left-24 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Logo / Brand -->
+    <div class="px-8 py-10 flex items-center mb-4 relative z-10">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                <i data-lucide="command" class="text-white" size="18"></i>
+            </div>
+            <span class="font-bold text-lg tracking-tighter text-slate-900">B2B Core</span>
+        </div>
+    </div>
+
+    <!-- Etiqueta de sección -->
+    <p class="px-8 text-[9px] font-black text-slate-300 uppercase tracking-widest mb-4">Navegación</p>
+
+    <!-- Navegación principal -->
+    <nav class="flex-1 px-4 space-y-1 relative z-10">
+        <button onclick="navigate('catalog')" id="nav-catalog" class="nav-btn w-full">
+            <i data-lucide="layers" size="16"></i>
+            Catálogo
+        </button>
+
+        <button onclick="navigate('dashboard')" id="nav-dashboard" class="nav-btn w-full">
+            <i data-lucide="bar-chart-3" size="16"></i>
+            Dashboard
+        </button>
+
+        <button onclick="navigate('cart')" id="nav-cart" class="nav-btn w-full relative">
+            <i data-lucide="shopping-bag" size="16"></i>
+            Pedido
+            <span id="cart-badge"
+                class="hidden absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-[9px] min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white font-bold shadow-lg shadow-blue-500/30">
+                0
+            </span>
+        </button>
+
+        <button onclick="navigate('orders-full')" id="nav-orders-full" class="nav-btn w-full">
+            <i data-lucide="clipboard-list" size="16"></i>
+            Órdenes
+        </button>
+    </nav>
+
+    <!-- Perfil de usuario -->
+    <div class="p-4 mx-2 mb-4 bg-white/50 border border-white/50 rounded-3xl relative z-10 overflow-hidden">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-xl"
+                id="user-initial">S</div>
+            <div class="overflow-hidden">
+                <p class="text-[11px] font-bold text-slate-900 truncate" id="user-name">Sistemas Industriales</p>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider" id="user-level">Distribuidor</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-1.5">
+            <button onclick="toggleUserProfile()"
+                class="text-[10px] text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl bg-white/50 border border-white hover:shadow-sm">
+                <i data-lucide="refresh-cw" size="11"></i> Switch
+            </button>
+            <button onclick="toggleTheme()"
+                class="text-[10px] text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl bg-white/50 border border-white hover:shadow-sm">
+                <i data-lucide="sun" size="11" id="theme-btn-icon"></i> Tema
+            </button>
+        </div>
+    </div>
+
+</aside>
+
+</aside>

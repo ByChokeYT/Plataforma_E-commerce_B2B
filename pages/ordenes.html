@@ -1,0 +1,52 @@
+<!-- ══════════════════════════════════════════════════════
+     pages/ordenes.html — Vista: Historial de Órdenes
+     Cargado por router.js en navigate('orders-full')
+     Inyectado en: #page-slot (index.html)
+     ══════════════════════════════════════════════════════ -->
+
+<div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden">
+
+    <!-- Header de la tabla con filtros -->
+    <div class="px-8 py-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/50">
+        <div>
+            <h3 class="font-bold text-slate-900 text-sm">Historial de Órdenes</h3>
+            <p class="text-[10px] text-slate-400 mt-0.5">Todas tus órdenes de compra corporativas</p>
+        </div>
+
+        <!-- Filtros por estado -->
+        <div class="flex gap-2" id="orders-filter-btns">
+            <button onclick="filterOrders('all')" id="filter-all"
+                class="px-3 py-1.5 bg-slate-900 text-white rounded-full text-[10px] font-bold transition-all">
+                Todos
+            </button>
+            <button onclick="filterOrders('Pendiente')" id="filter-pending"
+                class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-[10px] font-bold text-slate-500 transition-all hover:bg-slate-50">
+                Pendientes
+            </button>
+            <button onclick="filterOrders('Aprobado')" id="filter-approved"
+                class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-[10px] font-bold text-slate-500 transition-all hover:bg-slate-50">
+                Aprobados
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabla de órdenes -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                    <th class="px-8 py-4">ID Orden</th>
+                    <th class="px-8 py-4">Fecha</th>
+                    <th class="px-8 py-4">Items</th>
+                    <th class="px-8 py-4">Total</th>
+                    <th class="px-8 py-4">Estado</th>
+                    <th class="px-8 py-4 text-right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="orders-full-table" class="divide-y divide-slate-50">
+                <!-- Populated by renderOrdersFiltered() in app.js -->
+            </tbody>
+        </table>
+    </div>
+
+</div>

@@ -1,0 +1,53 @@
+<!-- ══════════════════════════════════════════════════════
+     pages/login.html — Vista de Autenticación B2B
+     Incluida directamente en index.html (no via fetch)
+     porque es la primera vista y no puede esperar.
+     Este archivo sirve como referencia / documentación.
+     ══════════════════════════════════════════════════════ -->
+
+<div class="bg-white w-full max-w-sm p-10 rounded-[2.5rem] shadow-2xl border border-slate-200
+            animate-scale-in relative z-10 text-center">
+
+    <!-- Logo -->
+    <div class="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xl">
+        <i data-lucide="command" class="text-white" size="32"></i>
+    </div>
+
+    <h1 class="text-2xl font-bold tracking-tight mb-2 text-slate-900">B2B Core</h1>
+    <p class="text-slate-400 text-xs mb-8 font-medium">Supply Chain Management Solution</p>
+
+    <!-- Formulario -->
+    <div class="space-y-3 mb-8 text-left">
+        <div class="relative">
+            <i data-lucide="building-2" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size="15"></i>
+            <input type="text" id="login-user" placeholder="ID de Cliente (ej: C-9901)"
+                class="w-full pl-11 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl
+                       focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500
+                       outline-none transition-all text-sm font-medium text-slate-800">
+        </div>
+        <div class="relative">
+            <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size="15"></i>
+            <input type="password" id="login-pass" placeholder="Contraseña"
+                class="w-full pl-11 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl
+                       focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500
+                       outline-none transition-all text-sm font-medium text-slate-800">
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <button onclick="handleLogin()"
+        class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-sm
+               hover:bg-slate-800 hover:scale-[1.02] active:scale-[0.98]
+               transition-all shadow-xl shadow-slate-900/15">
+        Acceder al Portal
+    </button>
+
+    <!-- Credenciales de demo -->
+    <div class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 text-left">
+        <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">Demo</p>
+        <p class="text-[11px] text-slate-500">Distribuidor: <span class="font-bold text-slate-700">C-9901</span></p>
+        <p class="text-[11px] text-slate-500">Premium: <span class="font-bold text-slate-700">C-8842</span></p>
+    </div>
+
+    <p class="mt-6 text-[9px] text-slate-300 font-bold uppercase tracking-widest">Powered by B2B Core™</p>
+</div>

@@ -1,0 +1,284 @@
+/* ═══════════════════════════════════════════════════════
+   global.css — Estilos Generales B2B Core
+   Contiene: animaciones, componentes, layouts, dark mode
+   Requiere: variables.css (cargado antes en el HTML)
+   ═══════════════════════════════════════════════════════ */
+
+/* --- Limpieza del efecto de ruido/glow heredado --- */
+body::before, .bg-glow {
+    display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────
+   TIPOGRAFÍA
+   ───────────────────────────────────────────────────── */
+h1, .h1 { font-size: 2rem;    font-weight: 700; letter-spacing: -0.022em; color: var(--text-main); line-height: 1.1; }
+h2, .h2 { font-size: 1.5rem;  font-weight: 600; letter-spacing: -0.020em; color: var(--text-main); }
+h3, .h3 { font-size: 1.125rem;font-weight: 600; color: var(--text-main); }
+h4, .h4 { font-size: 1rem;    font-weight: 600; color: var(--text-main); }
+.text-xs  { font-size: 0.6875rem; }
+.text-sm  { font-size: 0.8125rem; }
+.font-black { font-weight: 700; }
+.font-bold  { font-weight: 600; }
+.tracking-tight   { letter-spacing: -0.02em; }
+.tracking-widest  { letter-spacing: 0.05em; }
+.font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+/* ─────────────────────────────────────────────────────
+   ANIMACIONES PREMIUM (Luxury Flow)
+   ───────────────────────────────────────────────────── */
+@keyframes mesh-flow {
+    0%   { transform: translate(0,0) rotate(0deg); }
+    50%  { transform: translate(5%, 5%) rotate(5deg); }
+    100% { transform: translate(0,0) rotate(0deg); }
+}
+
+@keyframes enter-up {
+    from { opacity: 0; transform: translateY(30px) scale(0.98); filter: blur(10px); }
+    to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.animate-enter-up { animation: enter-up 0.8s var(--transition-slow) forwards; }
+.animate-mesh     { animation: mesh-flow 20s ease-in-out infinite; }
+
+/* ─────────────────────────────────────────────────────
+   GLASSMORPHISM (Ultra Detail)
+   ───────────────────────────────────────────────────── */
+.glass {
+    background: var(--bg-sidebar);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-md);
+}
+
+.glass-card {
+    background: hsla(0, 0%, 100%, 0.05);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* ─────────────────────────────────────────────────────
+   TARJETAS (Apple Style Refined)
+   ───────────────────────────────────────────────────── */
+.card-apple {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+    padding: 1.5rem;
+    transition: all 0.4s var(--transition-slow);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-apple::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at top left, hsla(0, 0%, 100%, 0.4), transparent 40%);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.card-apple:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-glass);
+}
+
+.card-apple:hover::after {
+    opacity: 1;
+}
+
+.stat-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+}
+
+/* ─────────────────────────────────────────────────────
+   NAVEGACIÓN LATERAL (Engineering Premium)
+   ───────────────────────────────────────────────────── */
+#sidebar {
+    width: 224px; /* 56 * 4 */
+    background: var(--bg-sidebar);
+    transition: transform 0.5s var(--transition-slow), width 0.5s var(--transition-slow);
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: var(--radius-xl);
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all 0.3s var(--transition-fast);
+    border: 1px solid transparent;
+    user-select: none;
+}
+
+.nav-btn:hover {
+    background: var(--bg-main);
+    color: var(--text-main);
+}
+
+nav .active {
+    background: var(--primary) !important;
+    color: white !important;
+    font-weight: 700;
+    box-shadow: 0 10px 20px var(--primary-glass);
+}
+
+nav .active i {
+    color: white !important;
+}
+
+/* Layout Management */
+#main-content {
+    margin-left: 224px;
+    transition: margin-left 0.5s var(--transition-slow);
+}
+
+.no-sidebar #main-content {
+    margin-left: 0 !important;
+}
+
+@media (max-width: 1024px) {
+    #sidebar { transform: translateX(-100%); }
+    #main-content { margin-left: 0 !important; }
+}
+
+/* Dark mode sidebar refinements */
+[data-theme="dark"] .nav-btn:hover {
+    background: hsla(0, 0%, 100%, 0.05);
+}
+
+
+/* ─────────────────────────────────────────────────────
+   SCROLLBAR PERSONALIZADA
+   ───────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ─────────────────────────────────────────────────────
+   SKELETON LOADING
+   ───────────────────────────────────────────────────── */
+.skeleton {
+    background: linear-gradient(90deg, var(--border) 25%, var(--bg-main) 50%, var(--border) 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+    border-radius: 8px;
+}
+
+/* ─────────────────────────────────────────────────────
+   GRÁFICO DE BARRAS CSS
+   ───────────────────────────────────────────────────── */
+.chart-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 150px;
+    padding-bottom: 20px;
+}
+.chart-bar {
+    flex: 1;
+    background: var(--primary);
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    transition: height 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    min-height: 4px;
+}
+.chart-bar::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+.chart-bar:hover { filter: brightness(1.2); cursor: help; }
+
+/* ─────────────────────────────────────────────────────
+   VISTAS — View Containers (router.js los muestra/oculta)
+   ───────────────────────────────────────────────────── */
+.view-container {
+    animation: scale-in 0.4s ease-out;
+}
+
+/* ─────────────────────────────────────────────────────
+   BADGE DEL CARRITO
+   ───────────────────────────────────────────────────── */
+#cart-badge {
+    box-shadow: 0 0 0 4px #0f172a;
+}
+
+/* ─────────────────────────────────────────────────────
+   INPUT DE BÚSQUEDA
+   ───────────────────────────────────────────────────── */
+#search-input::placeholder {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────
+   LINE CLAMP
+   ───────────────────────────────────────────────────── */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────────
+   TIMELINE DE RASTREO
+   ───────────────────────────────────────────────────── */
+#tracking-timeline .space-y-6 > div:last-child::before {
+    display: none;
+}
+
+/* ─────────────────────────────────────────────────────
+   MODALES
+   ───────────────────────────────────────────────────── */
+.modal {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    visibility: hidden;
+    opacity: 0;
+}
+.modal:not(.hidden) {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────
+   TOAST NOTIFICATIONS
+   ───────────────────────────────────────────────────── */
+#toast {
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+}
+#toast.show {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+}
+
+/* ─────────────────────────────────────────────────────
+   IMPRESIÓN DE FACTURAS
+   ───────────────────────────────────────────────────── */
+@media print {
+    body * { visibility: hidden; }
+    #modal-invoice, #modal-invoice * { visibility: visible; }
+    #modal-invoice { position: absolute; left: 0; top: 0; width: 100%; }
+    button { display: none !important; }
+}

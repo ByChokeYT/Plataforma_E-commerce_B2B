@@ -1,0 +1,50 @@
+<!-- ══════════════════════════════════════════════════════
+     pages/dashboard.html — Vista: Panel de Control B2B
+     Cargado por router.js en navigate('dashboard')
+     Inyectado en: #page-slot (index.html)
+     ══════════════════════════════════════════════════════ -->
+
+<!-- ─── Bento Grid de KPIs ─── -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="stats-bento">
+    <!-- Populated by renderDashboard() in app.js -->
+</div>
+
+<!-- ─── Gráfico + Órdenes Recientes ─── -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Gráfico de consumo mensual -->
+    <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200/60 shadow-sm p-8">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h3 class="font-bold text-slate-900 text-sm">Consumo Mensual</h3>
+                <p class="text-[10px] text-slate-400 mt-0.5 font-medium uppercase tracking-widest">
+                    en miles USD
+                </p>
+            </div>
+            <span class="text-[9px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold uppercase tracking-widest">
+                2025
+            </span>
+        </div>
+        <!-- Barras del gráfico — generadas por renderChart() -->
+        <div class="flex items-end gap-2 h-36" id="revenue-chart">
+            <!-- Populated by renderChart() in app.js -->
+        </div>
+    </div>
+
+    <!-- Mini tabla de órdenes recientes -->
+    <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
+        <div class="px-6 py-5 border-b border-slate-50 flex justify-between items-center flex-shrink-0">
+            <h3 class="font-bold text-slate-900 text-sm">Órdenes Recientes</h3>
+            <button onclick="navigate('orders-full')"
+                class="text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1">
+                Ver todas <i data-lucide="arrow-right" size="10"></i>
+            </button>
+        </div>
+        <table class="w-full text-left text-xs flex-1">
+            <tbody id="orders-mini-table" class="divide-y divide-slate-50">
+                <!-- Populated by renderDashboard() in app.js -->
+            </tbody>
+        </table>
+    </div>
+
+</div>

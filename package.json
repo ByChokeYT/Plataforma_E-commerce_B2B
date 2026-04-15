@@ -1,0 +1,11 @@
+{
+  "name": "b2b-core",
+  "version": "1.0.0",
+  "description": "Plataforma E-commerce B2B de alto rendimiento con HTML Partials + SPA Router",
+  "scripts": {
+    "start": "npx serve . --listen 3000",
+    "dev": "npx serve . --listen 3000 --cors"
+  },
+  "keywords": ["b2b", "ecommerce", "vanilla-js", "spa"],
+  "author": "José Luis Choquevillca"
+}
