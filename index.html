@@ -7,244 +7,106 @@
     <meta name="description" content="Portal corporativo B2B para pedidos al por mayor con precios dinámicos, gestión de crédito y dashboard estratégico.">
     <meta name="robots" content="noindex">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/favicon.png">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- ─── Design System CSS ─── -->
+    <!-- ——— Design System CSS ——— -->
     <link rel="stylesheet" href="assets/css/variables.css">
     <link rel="stylesheet" href="assets/css/global.css">
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans">
 
-<!-- ══════════════════════════════════════════════════════
-     VISTA LOGIN (High-Fidelity)
-     ══════════════════════════════════════════════════════ -->
 <div id="view-login" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900 overflow-hidden">
-    
-    <!-- Dynamic Mesh Background -->
     <div class="absolute inset-0 z-0">
         <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[var(--mesh-1)] rounded-full blur-[100px] animate-mesh"></div>
         <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[var(--mesh-2)] rounded-full blur-[120px] animate-mesh" style="animation-delay: -5s;"></div>
         <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-[var(--mesh-3)] rounded-full blur-[80px] animate-mesh" style="animation-delay: -10s;"></div>
     </div>
 
-    <!-- Login Card (Vanguard Design) -->
-    <div class="glass w-full max-w-[400px] p-12 rounded-[2.5rem] relative z-10 mx-4
-                animate-enter-up border border-white/20 shadow-2xl backdrop-blur-3xl overflow-hidden">
-        
-        <!-- Subtle card glow -->
-        <div class="absolute -top-24 -left-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+    <div class="glass w-full max-w-[420px] p-12 rounded-[2.5rem] relative z-10 mx-4 animate-enter-up border border-white/10 shadow-2xl backdrop-blur-3xl overflow-hidden">
+        <!-- Efectos de brillo interno -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl"></div>
 
-        <div class="w-16 h-16 bg-white/10 border border-white/20 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-            <i data-lucide="command" class="text-white" size="32"></i>
-        </div>
+        <div class="relative z-10 text-center">
+            <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-400 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(37,99,235,0.3)] transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                <i data-lucide="shield-check" class="text-white" size="36"></i>
+            </div>
+            
+            <h2 class="text-4xl font-black text-white tracking-tighter mb-1">B2B Core</h2>
+            <p class="text-[10px] text-blue-400 font-black uppercase tracking-[0.4em] mb-10">Premium Network Access</p>
 
-        <h1 class="text-3xl font-bold tracking-tighter mb-2 text-white text-gradient">B2B Core</h1>
-        <p class="text-white/40 text-[10px] mb-10 font-bold uppercase tracking-[0.2em]">Enterprise Supply Network</p>
-
-        <div class="space-y-4 mb-10 text-left">
-            <div class="space-y-1.5">
-                <label class="text-[10px] font-black text-white/30 uppercase ml-1 tracking-widest">Client Identity</label>
-                <div class="relative group">
-                    <i data-lucide="building-2" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-blue-400 transition-colors" size="16"></i>
-                    <input type="text" id="login-user" placeholder="C-9901"
-                        class="w-full pl-12 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl
-                               focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/50
-                               outline-none transition-all text-sm font-medium text-white placeholder:text-white/10">
+            <div class="space-y-5 text-left">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-white/90 uppercase ml-1 tracking-widest">Identificador Corporativo</label>
+                    <div class="relative group">
+                        <i data-lucide="building-2" class="absolute left-5 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-blue-400 transition-colors" size="18"></i>
+                        <input type="text" id="login-user" placeholder="C-9901" 
+                            class="w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-8 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all text-sm font-bold text-white placeholder:text-white/40">
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-white/90 uppercase ml-1 tracking-widest">Código de Seguridad</label>
+                    <div class="relative group">
+                        <i data-lucide="lock" class="absolute left-5 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-blue-400 transition-colors" size="18"></i>
+                        <input type="password" id="login-pass" placeholder="••••••••" 
+                            class="w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-8 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all text-sm font-bold text-white placeholder:text-white/40">
+                    </div>
                 </div>
             </div>
-            <div class="space-y-1.5">
-                <label class="text-[10px] font-black text-white/30 uppercase ml-1 tracking-widest">Security Key</label>
-                <div class="relative group">
-                    <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-blue-400 transition-colors" size="16"></i>
-                    <input type="password" id="login-pass" placeholder="••••••••"
-                        class="w-full pl-12 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl
-                               focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/50
-                               outline-none transition-all text-sm font-medium text-white placeholder:text-white/10">
+
+            <button onclick="handleLogin()" 
+                class="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-4.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:from-blue-500 hover:to-blue-400 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_30px_rgba(37,99,235,0.3)] flex items-center justify-center gap-3 mt-10">
+                Acceso Corporativo
+                <i data-lucide="arrow-right" size="16"></i>
+            </button>
+
+            <div class="mt-10 pt-8 border-t border-white/10 flex flex-col gap-4">
+                <p class="text-[9px] text-white/40 font-black uppercase text-center tracking-widest">Sistemas de Abastecimiento Certificados</p>
+                <div class="flex justify-center gap-3">
+                    <div class="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-[10px] font-bold text-white/40">C-9901</div>
+                    <div class="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-[10px] font-bold text-white/40">C-8842</div>
                 </div>
-            </div>
-        </div>
-
-        <button onclick="handleLogin()"
-            class="w-full bg-white text-slate-900 py-4 rounded-full font-bold text-sm
-                   hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98]
-                   transition-all shadow-2xl shadow-white/10 flex items-center justify-center gap-2">
-            Iniciar Sesión Corporativa
-            <i data-lucide="arrow-right" size="16"></i>
-        </button>
-
-        <div class="mt-8 pt-8 border-t border-white/5 flex flex-col gap-3">
-            <p class="text-[10px] text-white/20 font-bold uppercase text-center tracking-widest">Access Profiles</p>
-            <div class="flex justify-center gap-2">
-                <span class="px-3 py-1 bg-white/5 rounded-full text-[9px] font-bold text-white/40 border border-white/5">C-9901 (Distribuidor)</span>
-                <span class="px-3 py-1 bg-white/5 rounded-full text-[9px] font-bold text-white/40 border border-white/5">C-8842 (Premium)</span>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- ══════════�    <!-- ─── SIDEBAR (Embebido - Vanilla) ────────── -->
-    <div id="sidebar-slot">
-        <aside class="w-56 glass text-slate-800 flex flex-col h-screen fixed left-0 top-0 z-50 transition-all duration-500 overflow-hidden" id="sidebar">
-            <div class="absolute -top-24 -left-24 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="px-8 py-10 flex items-center mb-4 relative z-10">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                        <i data-lucide="command" class="text-white" size="18"></i>
-                    </div>
-                    <span class="font-bold text-lg tracking-tighter text-slate-900">B2B Core</span>
-                </div>
-            </div>
-            <p class="px-8 text-[9px] font-black text-slate-300 uppercase tracking-widest mb-4">Navegación</p>
-            <nav class="flex-1 px-4 space-y-1 relative z-10">
-                <button onclick="navigate('catalog')" id="nav-catalog" class="nav-btn w-full">
-                    <i data-lucide="layers" size="16"></i> Catálogo
-                </button>
-                <button onclick="navigate('dashboard')" id="nav-dashboard" class="nav-btn w-full">
-                    <i data-lucide="bar-chart-3" size="16"></i> Dashboard
-                </button>
-                <button onclick="navigate('cart')" id="nav-cart" class="nav-btn w-full relative">
-                    <i data-lucide="shopping-bag" size="16"></i> Pedido
-                    <span id="cart-badge" class="hidden absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-[9px] min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white font-bold shadow-lg shadow-blue-500/30">0</span>
-                </button>
-                <button onclick="navigate('orders-full')" id="nav-orders-full" class="nav-btn w-full">
-                    <i data-lucide="clipboard-list" size="16"></i> Órdenes
-                </button>
-            </nav>
-            <div class="p-4 mx-2 mb-4 bg-white/50 border border-white/50 rounded-3xl relative z-10 overflow-hidden">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-9 h-9 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-xl" id="user-initial">S</div>
-                    <div class="overflow-hidden">
-                        <p class="text-[11px] font-bold text-slate-900 truncate" id="user-name">Sistemas Industriales</p>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider" id="user-level">Distribuidor</p>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-1.5">
-                    <button onclick="toggleUserProfile()" class="text-[10px] text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl bg-white/50 border border-white hover:shadow-sm">
-                        <i data-lucide="refresh-cw" size="11"></i> Switch
-                    </button>
-                    <button onclick="toggleTheme()" class="text-[10px] text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl bg-white/50 border border-white hover:shadow-sm">
-                        <i data-lucide="sun" size="11" id="theme-btn-icon"></i> Tema
-                    </button>
-                </div>
-            </div>
-        </aside>
-    </div>
-
-    <!-- ─── CONTENIDO PRINCIPAL ─────────────────────── -->
-    <main class="flex-1 p-8 md:p-10 min-h-screen" id="main-content">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8 relative z-10">
-            <div class="animate-enter-up">
-                <h1 class="text-4xl font-black text-slate-900 tracking-tighter" id="view-title">Catálogo</h1>
-                <p class="text-slate-400 text-sm font-bold mt-2 max-w-md opacity-60" id="view-subtitle">Gestión de suministros industriales con tarifas corporativas.</p>
-            </div>
-            <div id="search-container" class="flex flex-col md:flex-row items-center gap-4 animate-enter-up w-full md:w-auto">
-                <div class="relative group w-full md:w-80">
-                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" size="18"></i>
-                    <input type="text" id="search-input" placeholder="Buscar por SKU o Categoría" class="pl-14 pr-6 py-4 bg-white border border-slate-100 rounded-2xl w-full shadow-sm focus:outline-none focus:ring-[12px] focus:ring-blue-500/5 focus:border-blue-500/30 transition-all text-sm font-medium placeholder:text-slate-300">
-                </div>
-                <button onclick="openModal('bulk-import')" class="flex items-center gap-3 px-6 py-4 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-slate-900/10 hover:shadow-blue-500/20 whitespace-nowrap">
-                    <i data-lucide="box" size="16"></i> Carga Masiva
-                </button>
-            </div>
-        </header>
-
-        <!-- ─── SECCIONES DE PÁGINA (Embebidas - Vanilla) ─── -->
-        <div id="page-slot">
-            <!-- Catálogo -->
-            <section id="page-catalog" class="hidden animate-enter-up">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="products-grid"></div>
-            </section>
-
-            <!-- Dashboard -->
-            <section id="page-dashboard" class="hidden animate-enter-up">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="stats-bento"></div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200/60 shadow-sm p-8">
-                        <div class="flex justify-between items-center mb-8">
-                            <div><h3 class="font-bold text-slate-900 text-sm">Consumo Mensual</h3><p class="text-[10px] text-slate-400 mt-0.5 font-medium uppercase tracking-widest">en miles USD</p></div>
-                            <span class="text-[9px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold uppercase tracking-widest">2025</span>
-                        </div>
-                        <div class="flex items-end gap-2 h-36" id="revenue-chart"></div>
-                    </div>
-                    <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
-                        <div class="px-6 py-5 border-b border-slate-50 flex justify-between items-center flex-shrink-0"><h3 class="font-bold text-slate-900 text-sm">Órdenes Recientes</h3><button onclick="navigate('orders-full')" class="text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1">Ver todas <i data-lucide="arrow-right" size="10"></i></button></div>
-                        <table class="w-full text-left text-xs flex-1"><tbody id="orders-mini-table" class="divide-y divide-slate-50"></tbody></table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Órdenes -->
-            <section id="page-orders-full" class="hidden animate-enter-up">
-                <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden">
-                    <div class="px-8 py-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/50">
-                        <div><h3 class="font-bold text-slate-900 text-sm">Historial de Órdenes</h3><p class="text-[10px] text-slate-400 mt-0.5">Todas tus órdenes de compra corporativas</p></div>
-                        <div class="flex gap-2" id="orders-filter-btns">
-                            <button onclick="filterOrders('all')" id="filter-all" class="px-3 py-1.5 bg-slate-900 text-white rounded-full text-[10px] font-bold transition-all">Todos</button>
-                            <button onclick="filterOrders('Pendiente')" id="filter-pending" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-[10px] font-bold text-slate-500 transition-all hover:bg-slate-50">Pendientes</button>
-                            <button onclick="filterOrders('Aprobado')" id="filter-approved" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-[10px] font-bold text-slate-500 transition-all hover:bg-slate-50">Aprobados</button>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50"><th class="px-8 py-4">ID Orden</th><th class="px-8 py-4">Fecha</th><th class="px-8 py-4">Items</th><th class="px-8 py-4">Total</th><th class="px-8 py-4">Estado</th><th class="px-8 py-4 text-right">Acciones</th></tr></thead><tbody id="orders-full-table" class="divide-y divide-slate-50"></tbody></table></div>
-                </div>
-            </section>
-
-            <!-- Carrito -->
-            <section id="page-cart" class="hidden animate-enter-up">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-2 space-y-4" id="cart-items"></div><aside class="space-y-5 animate-enter-right"><div class="bg-white p-7 rounded-3xl border border-slate-200/60 shadow-sm"><h3 class="font-bold text-sm mb-5 text-slate-900 flex items-center gap-2"><i data-lucide="receipt" size="16" class="text-blue-500"></i> Resumen de Orden</h3><div class="space-y-3 text-xs mb-6"><div class="flex justify-between text-slate-400"><span>Subtotal</span><span class="font-semibold text-slate-800" id="summary-subtotal">$0.00</span></div><div class="flex justify-between text-blue-600 font-semibold bg-blue-50 px-3 py-2 rounded-xl border border-blue-100/50"><span class="flex items-center gap-1"><i data-lucide="trending-down" size="11"></i> Ahorro B2B</span><span id="summary-savings">-$0.00</span></div><div class="flex justify-between text-slate-400"><span>IVA (13%)</span><span id="summary-tax">$0.00</span></div><div class="pt-3 border-t border-slate-100 flex justify-between items-baseline"><span class="text-slate-900 font-bold">Total</span><span class="text-xl font-bold text-slate-900" id="summary-total">$0.00</span></div></div><button id="checkout-btn" onclick="handleCheckout()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-xs hover:bg-blue-700 active:scale-[0.98] transition-all shadow-sm shadow-blue-500/20 mb-3 flex items-center justify-center gap-2"><i data-lucide="check-circle" size="14"></i> Finalizar Pedido</button><button onclick="sendWhatsAppOrder()" class="w-full bg-emerald-500 text-white py-3 rounded-xl font-bold text-xs hover:bg-emerald-600 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-sm shadow-emerald-500/20"><i data-lucide="message-circle" size="14"></i> Negociar por WhatsApp</button></div><div class="bg-slate-50 p-6 rounded-3xl border border-slate-200/50"><div class="flex justify-between items-center mb-4"><p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Línea de Crédito</p><span class="text-xs font-bold text-blue-600" id="credit-percent">0%</span></div><div class="w-full bg-slate-200 rounded-full h-2.5 mb-4 overflow-hidden"><div id="credit-bar" class="bg-blue-600 h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div></div><div class="flex justify-between text-xs font-bold text-slate-500"><span class="flex items-center gap-1"><i data-lucide="minus-circle" size="10" class="text-slate-400"></i> <span id="credit-used">$0</span></span><span class="flex items-center gap-1"><span id="credit-limit">$0</span> <i data-lucide="wallet" size="10" class="text-slate-400"></i></span></div></div></aside></div>
-            </section>
+<div id="app-shell" class="hidden min-h-screen flex flex-col lg:flex-row bg-slate-50">
+    <!-- Overlay para móvil -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+    
+    <div id="sidebar-slot"></div>
+    
+    <main class="flex-1 min-h-screen lg:pl-56 transition-all duration-500" id="main-content">
+        <div class="p-4 md:p-8 lg:p-12 max-w-7xl mx-auto">
+            <div id="header-slot"></div>
+            <div id="page-slot" class="animate-enter-up"></div>
         </div>
-    </main>xt-white rounded-2xl
-                           text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-slate-900/10 hover:shadow-blue-500/20 whitespace-nowrap">
-                    <i data-lucide="box" size="16"></i>
-                    Carga Masiva
-                </button>
-            </div>
-        </header>
-
-        <!-- ─── SLOT DE PÁGINA ACTIVA ────────────────────
-             router.js inyecta aquí el HTML de /pages/*.html
-             con cada llamada a navigate().
-             ─────────────────────────────────────────── -->
-        <div id="page-slot">
-            <!-- La vista activa se renderiza aquí -->
-        </div>
-
     </main>
-</div><!-- end #app-shell -->
+</div>
 
-
-<!-- ══════════════════════════════════════════════════════
-     MODALES GLOBALES
-     · Compartidos entre todas las vistas
-     · Siempre disponibles en el DOM
-     ══════════════════════════════════════════════════════ -->
-
-<!-- Modal: Factura / Invoice -->
+<!-- Modales Globales -->
 <div id="modal-invoice" class="modal fixed inset-0 z-[110] flex items-center justify-center hidden">
     <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeModal('invoice')"></div>
     <div class="bg-white w-full max-w-2xl mx-4 rounded-3xl shadow-2xl relative z-10 overflow-hidden animate-scale-in">
-        <div id="invoice-content" class="p-12">
-            <!-- Populated by showInvoice() in app.js -->
-        </div>
+        <div id="invoice-content" class="p-12"></div>
         <div class="px-12 py-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-4">
-            <button onclick="closeModal('invoice')"
-                class="px-6 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors">
-                Cerrar
-            </button>
-            <button onclick="window.print()"
-                class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold
-                       hover:bg-blue-700 transition-all flex items-center gap-2">
+            <button onclick="closeModal('invoice')" class="px-6 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors">Cerrar</button>
+            <button onclick="window.print()" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all flex items-center gap-2">
                 <i data-lucide="printer" size="14"></i> Imprimir Factura
             </button>
         </div>
     </div>
 </div>
 
-<!-- Modal: Rastreo de Envío / Tracking -->
 <div id="modal-tracking" class="modal fixed inset-0 z-[110] flex items-center justify-center hidden">
     <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeModal('tracking')"></div>
     <div class="bg-white w-full max-w-lg mx-4 rounded-3xl shadow-2xl relative z-10 overflow-hidden animate-scale-in">
@@ -254,107 +116,60 @@
                     <h3 class="text-lg font-bold text-slate-900" id="tracking-order-id">Rastreo de Orden</h3>
                     <p class="text-xs text-slate-400 mt-0.5" id="tracking-order-date"></p>
                 </div>
-                <button onclick="closeModal('tracking')"
-                    class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
+                <button onclick="closeModal('tracking')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
                     <i data-lucide="x" size="14"></i>
                 </button>
             </div>
-            <!-- Timeline generado por showTracking() en app.js -->
             <div id="tracking-timeline" class="relative"></div>
-            <!-- Info de transportista -->
             <div class="mt-8 bg-slate-50 rounded-2xl p-5 flex items-center gap-4">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
                     <i data-lucide="truck" class="text-white" size="18"></i>
                 </div>
                 <div>
                     <p class="text-xs font-bold text-slate-900">Transportista: DHL Express Industrial</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5">
-                        Guía: <span class="font-mono font-bold text-blue-600" id="tracking-guide">—</span>
-                    </p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Guía: <span class="font-mono font-bold text-blue-600" id="tracking-guide">—</span></p>
                 </div>
             </div>
         </div>
         <div class="px-8 py-5 bg-slate-50 border-t border-slate-100 flex justify-end">
-            <button onclick="closeModal('tracking')"
-                class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all">
-                Cerrar
-            </button>
+            <button onclick="closeModal('tracking')" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all">Cerrar</button>
         </div>
     </div>
 </div>
 
-<!-- Modal: Carga Masiva de SKUs -->
 <div id="modal-bulk-import" class="modal fixed inset-0 z-[110] flex items-center justify-center hidden">
     <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeModal('bulk-import')"></div>
     <div class="bg-white w-full max-w-md mx-4 rounded-3xl shadow-2xl relative z-10 overflow-hidden animate-scale-in">
         <div class="p-8">
             <h3 class="text-lg font-bold text-slate-900 mb-1">Carga Masiva de SKUs</h3>
-            <p class="text-xs text-slate-400 mb-6">
-                Pega los IDs y cantidades separados por coma.<br>
-                Ejemplo: <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">1, 10</code>
-            </p>
-            <textarea id="bulk-input" placeholder="ID, CANTIDAD&#10;1, 12&#10;5, 100&#10;3, 25"
-                class="w-full h-48 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-mono
-                       focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500
-                       transition-all mb-6 resize-none"></textarea>
+            <p class="text-xs text-slate-400 mb-6">Pega los IDs y cantidades separados por coma.</p>
+            <textarea id="bulk-input" placeholder="ID, CANTIDAD" class="w-full h-48 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-mono focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all mb-6 resize-none"></textarea>
             <div class="flex gap-3">
-                <button onclick="handleBulkImport()"
-                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all text-xs">
-                    Añadir al Carrito
-                </button>
-                <button onclick="closeModal('bulk-import')"
-                    class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-all text-xs">
-                    Cancelar
-                </button>
+                <button onclick="handleBulkImport()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all text-xs">Añadir al Carrito</button>
+                <button onclick="closeModal('bulk-import')" class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-all text-xs">Cancelar</button>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════════════════
-     ELEMENTOS GLOBALES FLOTANTES
-     ══════════════════════════════════════════════════════ -->
-
-<!-- Botón flotante WhatsApp -->
-<a href="https://wa.me/59178945612" target="_blank" rel="noopener"
-    class="fixed bottom-8 left-8 z-[100] w-14 h-14 bg-emerald-500 text-white rounded-full
-           shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95
-           transition-all animate-enter-bottom"
-    aria-label="Contactar por WhatsApp">
+<!-- Flotantes -->
+<a href="https://wa.me/59178945612" target="_blank" rel="noopener" class="fixed bottom-8 right-8 z-[100] w-14 h-14 bg-emerald-500 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all animate-enter-bottom" aria-label="Contactar por WhatsApp">
     <i data-lucide="message-circle" size="26"></i>
 </a>
 
-<!-- ══════════════════════════════════════════════════════
-     ELEMENTO DE ERROR FATAL (Aislamiento de Layout)
-     ══════════════════════════════════════════════════════ -->
-<div id="error-overlay" class="hidden fixed inset-0 z-[300] bg-slate-900 overflow-y-auto">
-    <!-- El contenido se inyecta desde router.js -->
-</div>
+<div id="error-overlay" class="hidden fixed inset-0 z-[300] bg-slate-900 overflow-y-auto"></div>
 
-<!-- Toast de notificaciones -->
 <div id="toast" class="fixed bottom-8 right-8 z-[100]">
     <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-slate-700/50">
-        <div id="toast-icon" class="text-blue-400">
-            <i data-lucide="info" size="18"></i>
-        </div>
+        <div id="toast-icon" class="text-blue-400"><i data-lucide="info" size="18"></i></div>
         <p id="toast-message" class="text-sm font-medium"></p>
     </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════════════════
-     SCRIPTS
-     Orden IMPORTANTE: app.js define state y funciones,
-     router.js las usa → app.js siempre PRIMERO.
-     ══════════════════════════════════════════════════════ -->
 <script src="assets/js/app.js"></script>
 <script src="assets/js/router.js"></script>
 <script>
-    // Inicializar iconos en el login (antes de que router.js arranque)
-    document.addEventListener('DOMContentLoaded', () => {
-        lucide.createIcons();
-    });
+    document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); });
 </script>
 
 </body>

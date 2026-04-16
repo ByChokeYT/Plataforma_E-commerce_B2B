@@ -20,7 +20,7 @@
 // ─────────────────────────────────────────────────────────
 const PRODUCTS = [
     {
-        id: 1, name: "Procesador Industrial X-100", category: "Hardware",
+        id: 1, name: "Procesador Industrial X-100", category: "Componentes",
         basePrice: 450.00, stock: 120,
         image: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600&h=600&fit=crop",
         tiers: [{ min: 1, price: 450 }, { min: 10, price: 410 }, { min: 50, price: 380 }]
@@ -44,7 +44,7 @@ const PRODUCTS = [
         tiers: [{ min: 1, price: 65 }, { min: 50, price: 55 }, { min: 200, price: 45 }]
     },
     {
-        id: 5, name: "Servidor Rack Mount 2U XEON", category: "Hardware",
+        id: 5, name: "Servidor Rack Mount 2U XEON", category: "Componentes",
         basePrice: 2450.00, stock: 15,
         image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",
         tiers: [{ min: 1, price: 2450 }, { min: 3, price: 2200 }, { min: 10, price: 1950 }]
@@ -62,13 +62,13 @@ const PRODUCTS = [
         tiers: [{ min: 1, price: 1560 }, { min: 5, price: 1400 }]
     },
     {
-        id: 8, name: "Unidad de Almacenamiento NAS 40TB", category: "Hardware",
+        id: 8, name: "Unidad de Almacenamiento NAS 40TB", category: "Componentes",
         basePrice: 1800.00, stock: 25,
         image: "https://images.unsplash.com/photo-1597733336794-12d05021d510?w=600&h=600&fit=crop",
         tiers: [{ min: 1, price: 1800 }, { min: 4, price: 1650 }]
     },
     {
-        id: 9, name: 'Monitor Industrial 4K 32"', category: "Hardware",
+        id: 9, name: 'Monitor Industrial 4K 32"', category: "Componentes",
         basePrice: 750.00, stock: 40,
         image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&h=600&fit=crop",
         tiers: [{ min: 1, price: 750 }, { min: 10, price: 680 }]
@@ -134,8 +134,8 @@ let state = {
     view: 'catalog',
     cart: [],
     orders: [
-        { id: 'PO-4401', date: '2025-03-25', total: 4500.00, status: 'Aprobado',  items: 12 },
-        { id: 'PO-4402', date: '2025-04-02', total: 1250.00, status: 'Pendiente', items: 5  }
+        { id: 'OC-4401', date: '2025-03-25', total: 4500.00, status: 'Aprobado',  items: 12 },
+        { id: 'OC-4402', date: '2025-04-02', total: 1250.00, status: 'Pendiente', items: 5  }
     ],
     searchTerm: '',
     theme: 'light',
@@ -253,7 +253,7 @@ function renderCatalog() {
                     <button onclick="addToCart(${product.id})"
                         class="w-full py-3.5 bg-slate-900 text-white rounded-xl text-[11px] font-black uppercase tracking-widest
                                hover:bg-blue-600 active:scale-[0.98] transition-all shadow-xl shadow-slate-900/5 hover:shadow-blue-500/20">
-                        Añadir al Pedido
+                        Añadir al Carrito
                     </button>
                 </div>
             </div>
@@ -291,9 +291,9 @@ function renderCart() {
     cartEl.innerHTML = state.cart.map(item => {
         const unitPrice = calculateUnitPrice(item, item.quantity);
         return `
-            <div class="bg-white p-5 rounded-2xl flex items-center gap-5 animate-enter-left
-                        border border-slate-200/40 shadow-sm">
-                <div class="w-16 h-16 rounded-xl bg-slate-50 p-1 flex-shrink-0">
+            <div class="bg-white p-4 md:p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-5 animate-enter-left
+                        border border-slate-200/40 shadow-sm text-slate-900">
+                <div class="w-20 h-20 md:w-16 md:h-16 rounded-xl bg-slate-50 p-1 flex-shrink-0">
                     <img src="${item.image}" alt="${item.name}"
                         class="w-full h-full object-cover rounded-lg"
                         onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=100&h=100&fit=crop'">
@@ -377,7 +377,7 @@ function resetTotals() {
 const COLOR_MAP = {
     blue:    { icon: 'bg-blue-600',    text: 'text-blue-600',    bg: 'bg-blue-50',    badge: 'Activo'  },
     emerald: { icon: 'bg-emerald-600', text: 'text-emerald-600', bg: 'bg-emerald-50', badge: 'OK'      },
-    amber:   { icon: 'bg-amber-500',   text: 'text-amber-600',   bg: 'bg-amber-50',   badge: 'Track'   },
+    amber:   { icon: 'bg-amber-500',   text: 'text-amber-600',   bg: 'bg-amber-50',   badge: 'Rastreo' },
     purple:  { icon: 'bg-purple-600',  text: 'text-purple-600',  bg: 'bg-purple-50',  badge: 'Ahorro'  },
 };
 
@@ -499,10 +499,15 @@ function _renderOrdersFiltered() {
     }
 
     tbody.innerHTML = list.map(order => `
-        <tr class="hover:bg-slate-50 transition-colors animate-enter-bottom">
-            <td class="px-8 py-5 font-bold text-blue-600 font-mono text-sm">${order.id}</td>
+        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50 group cursor-pointer" onclick="toggleOrderItems('${order.id}')">
+            <td class="px-8 py-5 font-bold text-blue-600 font-mono text-sm">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="chevron-down" size="14" class="text-slate-300 group-hover:text-blue-500 transition-transform" id="icon-${order.id}"></i>
+                    ${order.id}
+                </div>
+            </td>
             <td class="px-8 py-5 text-sm text-slate-500 font-medium">${order.date}</td>
-            <td class="px-8 py-5 text-sm font-bold text-slate-700">${order.items} productos</td>
+            <td class="px-8 py-5 text-sm font-bold text-slate-700">${order.itemsCount || order.items} prod.</td>
             <td class="px-8 py-5 font-bold text-slate-900 font-mono">$${order.total.toFixed(2)}</td>
             <td class="px-8 py-5">
                 <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter
@@ -512,7 +517,7 @@ function _renderOrdersFiltered() {
                     ${order.status}
                 </span>
             </td>
-            <td class="px-8 py-5 text-right space-x-1">
+            <td class="px-8 py-5 text-right space-x-1" onclick="event.stopPropagation()">
                 <button onclick="showInvoice('${order.id}')" title="Ver Factura"
                     class="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-slate-900">
                     <i data-lucide="file-text" size="15"></i>
@@ -522,9 +527,42 @@ function _renderOrdersFiltered() {
                     <i data-lucide="map-pin" size="15"></i>
                 </button>
             </td>
+        </tr>
+        <tr id="details-${order.id}" class="hidden bg-slate-50/50">
+            <td colspan="6" class="px-12 py-6">
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                    <table class="w-full text-left text-[11px]">
+                        <thead class="bg-slate-50 text-slate-400 uppercase tracking-widest font-black">
+                            <tr>
+                                <th class="px-6 py-3">Producto</th>
+                                <th class="px-6 py-3 text-center">Cant.</th>
+                                <th class="px-6 py-3 text-right">Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${(order.orderItems || []).map(item => `
+                                <tr>
+                                    <td class="px-6 py-3 font-bold text-slate-700">${item.name}</td>
+                                    <td class="px-6 py-3 text-center font-mono">${item.quantity}</td>
+                                    <td class="px-6 py-3 text-right font-bold text-slate-900">$${(item.basePrice * (1 - state.user.discount)).toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </td>
         </tr>`).join('');
     lucide.createIcons();
 }
+
+window.toggleOrderItems = (id) => {
+    const row  = document.getElementById(`details-${id}`);
+    const icon = document.getElementById(`icon-${id}`);
+    if (row) {
+        row.classList.toggle('hidden');
+        if (icon) icon.style.transform = row.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+};
 
 function renderOrdersFull() {
     activeFilter = 'all';
@@ -540,7 +578,7 @@ window.showTracking = (orderId) => {
 
     _set('tracking-order-id',   `Rastreo: ${order.id}`);
     _set('tracking-order-date', `Fecha de orden: ${order.date}`);
-    _set('tracking-guide',      `1Z${order.id.replace('PO-','')}AA${Math.floor(Math.random()*1e9)}`);
+    _set('tracking-guide',      `1Z${order.id.replace('OC-','')}AA${Math.floor(Math.random()*1e9)}`);
 
     const elTL = document.getElementById('tracking-timeline');
     if (!elTL) return;
@@ -718,11 +756,12 @@ window.handleCheckout = () => {
     }
 
     const newOrder = {
-        id:     `PO-${Math.floor(Math.random() * 9000) + 1000}`,
-        date:   new Date().toISOString().split('T')[0],
+        id:         `OC-${Math.floor(Math.random() * 9000) + 1000}`,
+        date:       new Date().toISOString().split('T')[0],
         total,
-        status: total > 5000 ? 'Pendiente' : 'Aprobado',
-        items:  totals.items
+        status:     total > 5000 ? 'Pendiente' : 'Aprobado',
+        itemsCount: totals.items,
+        orderItems: [...state.cart] // Clonar detalle de productos
     };
 
     state.orders.unshift(newOrder);
