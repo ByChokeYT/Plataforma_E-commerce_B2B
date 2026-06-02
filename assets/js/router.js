@@ -11,7 +11,12 @@
 
 'use strict';
 
-// ─── Mapa de rutas (Vainilla Consolidada) ─────────────────
+if (window.__router_initialized) {
+    console.warn('[Router] El enrutador ya está inicializado. Abortando carga duplicada.');
+} else {
+    window.__router_initialized = true;
+
+    // ─── Mapa de rutas (Vainilla Consolidada) ─────────────────
 const ROUTES = {
     catalog:       { id: 'page-catalog',   title: 'Catálogo de Suministros',   sub: 'Gestión de suministros industriales con tarifas corporativas.', search: true  },
     cart:          { id: 'page-cart',      title: 'Revisión de Orden',          sub: 'Gestión de tu pedido actual al por mayor.',                   search: false },
@@ -58,9 +63,15 @@ function _syncToastElements() { window._routerEls = el; }
 /**
  * navigate() — Navegación Local (Sin Fetch)
  */
+let isNavigating = false;
+
 window.navigate = async (view) => {
-    state.view = view;
-    console.log(`[Router] Navegando Local: ${view}`);
+    if (isNavigating) return;
+    isNavigating = true;
+
+    try {
+        state.view = view;
+        console.log(`[Router] Navegando Local: ${view}`);
 
     const loginView = document.getElementById('view-login');
     const appShell  = document.getElementById('app-shell');
@@ -89,12 +100,23 @@ window.navigate = async (view) => {
         sections.forEach(s => s.classList.add('hidden'));
     }
 
-    // ─── Mostrar la sección solicitada ────────────────────
-    const route = ROUTES[view];
-    const targetSection = document.getElementById(route?.id);
+    // ─── Mostrar Skeleton mientras carga ──────────────────────
+    _showPageSkeleton(view);
+
+    // ─── Cargar el Shell si es la primera vez (Refactor B2B) ───
+    const sidebarSlot = document.getElementById('sidebar-slot');
+    const headerSlot  = document.getElementById('header-slot');
+    if (view !== 'login' && (!(sidebarSlot && sidebarSlot.innerHTML) || !(headerSlot && headerSlot.innerHTML))) {
+        await loadGlobalComponents();
+    }
+
+    // ─── Cargar el HTML de la página (Fetch) ──────────────────
+    const route = ROUTES[view] || {};
+    const pageUrl = `pages/${view === 'orders-full' ? 'ordenes' : view === 'cart' ? 'carrito-b2b' : view === 'catalog' ? 'catalogo' : view}.html`;
+    const html = await loadHTML(pageUrl);
     
-    if (targetSection) {
-        targetSection.classList.remove('hidden');
+    if (pageSlot && html) {
+        pageSlot.innerHTML = html;
         
         // Actualizar header dinámico
         if (el.viewTitle)    el.viewTitle.innerText    = route.title;
@@ -109,7 +131,7 @@ window.navigate = async (view) => {
             el.searchInput.value = '';
         }
 
-        // Renderizado lógico
+        // Renderizado lógico (app.js)
         _renderView(view);
         _updateNav();
         _updateUserInfo();
@@ -118,11 +140,127 @@ window.navigate = async (view) => {
 
         lucide.createIcons();
         saveState();
+
+        // FORZAR VISIBILIDAD: Asegurar que el slot no se quede en opacidad 0
+        if (pageSlot) {
+            pageSlot.style.opacity = '1';
+            pageSlot.style.visibility = 'visible';
+        }
+    } else {
+        console.error(`[Router] Error al cargar la página: ${pageUrl}`);
+        }
+    } catch (e) {
+        console.error(`[Router] Error crítico en navegación:`, e);
+    } finally {
+        isNavigating = false;
     }
 };
 
-async function loadHTML(url) { return ''; }
-function showFatalError() {}
+/**
+ * loadHTML() — Carga un fragmento HTML via fetch
+ */
+async function loadHTML(url) {
+    try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        return await resp.text();
+    } catch (e) {
+        console.error(`[Router] Error en loadHTML(${url}):`, e);
+        return null;
+    }
+}
+
+function showFatalError(msg) {
+    const overlay = document.getElementById('error-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.innerHTML = `
+            <div class="flex items-center justify-center min-h-screen p-10">
+                <div class="bg-white/10 backdrop-blur-xl border border-white/20 p-12 rounded-[3rem] text-center max-w-sm">
+                    <div class="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i data-lucide="alert-triangle" class="text-red-400" size="32"></i>
+                    </div>
+                    <h2 class="text-white font-bold text-xl mb-3">Error de Carga</h2>
+                    <p class="text-white/40 text-xs mb-8">${msg}</p>
+                    <button onclick="location.reload()" class="w-full py-4 bg-white text-slate-900 rounded-2xl font-bold text-sm">
+                        Reintentar
+                    </button>
+                </div>
+            </div>`;
+        lucide.createIcons();
+    }
+}
+
+/**
+ * loadGlobalComponents() — Carga Sidebar y Header una sola vez
+ */
+async function loadGlobalComponents() {
+    console.log('[Router] Cargando componentes globales...');
+    const [sidebarHTML, headerHTML] = await Promise.all([
+        loadHTML('components/sidebar.html'),
+        loadHTML('components/header.html')
+    ]);
+
+    const sidebarSlot = document.getElementById('sidebar-slot');
+    const headerSlot  = document.getElementById('header-slot');
+    if (sidebarSlot && sidebarHTML) sidebarSlot.innerHTML = sidebarHTML;
+    if (headerSlot && headerHTML)   headerSlot.innerHTML  = headerHTML;
+    
+    // Re-vincular elementos del header/sidebar tras carga
+    _updateSelectors();
+    lucide.createIcons();
+}
+
+/**
+ * _updateSelectors() — Actualiza referencias a elementos dinámicos
+ */
+function _updateSelectors() {
+    el.viewTitle       = document.getElementById('view-title');
+    el.viewSubtitle    = document.getElementById('view-subtitle');
+    el.searchContainer = document.getElementById('search-container');
+    el.searchInput     = document.getElementById('search-input');
+    el.cartBadge       = document.getElementById('cart-badge');
+}
+
+/**
+ * _showPageSkeleton() — Renderiza un esqueleto visual de carga
+ */
+function _showPageSkeleton(view) {
+    const pageSlot = el.pageSlot || document.getElementById('page-slot');
+    if (!pageSlot) return;
+
+    let skeletonHTML = '';
+
+    if (view === 'catalog') {
+        skeletonHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                ${Array(6).fill(`
+                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+                        <div class="w-full h-48 skeleton rounded-2xl mb-6"></div>
+                        <div class="h-4 w-2/3 skeleton rounded mb-3"></div>
+                        <div class="h-3 w-1/3 skeleton rounded mb-6"></div>
+                        <div class="flex justify-between items-center">
+                            <div class="h-6 w-20 skeleton rounded"></div>
+                            <div class="h-10 w-10 skeleton rounded-xl"></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`;
+    } else if (view === 'dashboard') {
+        skeletonHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+                ${Array(4).fill('<div class="h-32 skeleton rounded-3xl"></div>').join('')}
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 h-80 skeleton rounded-3xl"></div>
+                <div class="h-80 skeleton rounded-3xl"></div>
+            </div>`;
+    } else {
+        skeletonHTML = `<div class="w-full h-96 skeleton rounded-[2.5rem]"></div>`;
+    }
+
+    pageSlot.innerHTML = skeletonHTML;
+}
 
 
 // Delegador de renderizado por vista
@@ -179,6 +317,18 @@ window.toggleTheme = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
+// NAVEGACIÓN MÓVIL
+// ═══════════════════════════════════════════════════════════
+window.toggleSidebar = () => {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) {
+        sidebar.classList.toggle('show');
+        if (overlay) overlay.classList.toggle('hidden');
+    }
+};
+
+// ═══════════════════════════════════════════════════════════
 // PERSISTENCIA
 // ═══════════════════════════════════════════════════════════
 function saveState() {
@@ -232,3 +382,4 @@ document.addEventListener('DOMContentLoaded', () => {
         navigate(state.view || 'catalog');
     }
 });
+} // Cierre del bloque else { window.__router_initialized = true;

@@ -1,11 +1,12 @@
-# 🏭 B2B Core | Industrial E-commerce Platform
+# 🏭 B2B Core | Plataforma E-commerce Industrial
 
-[![Status](https://img.shields.io/badge/Status-Premium_Prototype-blue.svg)]()
+[![Estado](https://img.shields.io/badge/Estado-Prototipo_Premium-blue.svg)]()
 [![Stack](https://img.shields.io/badge/Stack-Vanilla_JS-yellow.svg)]()
-[![Design](https://img.shields.io/badge/Design-Glassmorphism-cyan.svg)]()
-[![Arquitectura](https://img.shields.io/badge/Arquitectura-SPA-orange.svg)]()
+[![Diseño](https://img.shields.io/badge/Diseño-Glassmorphism-cyan.svg)]()
+[![Arquitectura](https://img.shields.io/badge/Arquitectura-SPA_+_Partials-orange.svg)]()
+[![Idioma](https://img.shields.io/badge/Idioma-Español-green.svg)]()
 
-Una plataforma de E-commerce B2B (Business-to-Business) de alto rendimiento, diseñada para la gestión de suministros industriales con lógica de precios dinámica, gestión de crédito corporativo y una interfaz premium estilo Apple.
+Plataforma de comercio electrónico B2B (Business-to-Business) de alto rendimiento para la gestión de suministros industriales. Incluye lógica de precios por volumen, crédito corporativo, dashboard de métricas y una interfaz visual premium estilo Apple — todo construido en **Vanilla JS puro**, sin frameworks.
 
 ---
 
@@ -38,190 +39,179 @@ Una plataforma de E-commerce B2B (Business-to-Business) de alto rendimiento, dis
 
 ---
 
-## 🧠 Arquitectura: ¿SPA o HTML Partials?
+## 🧠 Arquitectura
 
-Este proyecto implementa una **SPA (Single Page Application)** construida con **Vanilla JavaScript puro**, sin frameworks externos.
+El proyecto combina dos patrones:
 
-### ¿Qué es una SPA?
-
-Una **Single Page Application** es una aplicación web donde el navegador **carga un único archivo HTML** (`index.html`) y **nunca recarga la página**. Todas las "pantallas" (catálogo, carrito, dashboard, login) se renderizan dinámicamente mediante JavaScript.
+- **SPA (Single Page Application):** Un único `index.html` que actúa como shell de la aplicación. JavaScript controla qué vista mostrar sin recargar la página.
+- **HTML Partials via `fetch()`:** El sidebar (`sidebar.html`) y el header (`header.html`) se cargan como fragmentos independientes e inyectados dinámicamente en slots del DOM.
 
 ```
-Usuario hace clic → JavaScript intercepta → Renderiza nueva vista → URL puede cambiar
-                   (NO recarga el browser)
+Browser carga index.html
+    └── router.js arranca
+        ├── fetch('components/sidebar.html') → inyecta en #sidebar-slot
+        ├── fetch('components/header.html')  → inyecta en #header-slot
+        └── fetch('pages/catalogo.html')     → inyecta en #page-slot
 ```
 
-### ¿Qué son los HTML Partials?
-
-Los **HTML Partials** son un enfoque alternativo donde cada "sección" de la UI (navbar, footer, sidebar, tarjeta de producto) se guarda como un **fragmento HTML independiente** y se inyecta en la página principal vía `fetch()`.
-
-```javascript
-// Ejemplo de HTML Partial
-const html = await fetch('/components/navbar.html').then(r => r.text());
-document.getElementById('navbar-slot').innerHTML = html;
-```
-
-### ¿Cuál usa este proyecto?
-
-| Característica          | SPA (este proyecto ✅) | HTML Partials         |
-|------------------------|------------------------|-----------------------|
-| Archivos HTML          | Solo `index.html`      | Uno por componente    |
-| Navegación             | JavaScript puro        | `fetch()` + slot      |
-| Servidor necesario     | No (abre directo)      | Sí (requiere servidor)|
-| Velocidad de cambio    | Instantánea            | Puede parpadear       |
-| Complejidad inicial    | Media                  | Baja                  |
-| Escala a proyectos grandes | Con router JS     | Con SSR o frameworks  |
-
-> En este proyecto, **todas las vistas viven dentro de `index.html`** como `<div>` ocultos que se muestran/ocultan con JavaScript según la ruta activa.
+> ⚠️ **Por este motivo necesitas un servidor local.** El navegador bloquea `fetch()` cuando se abre un archivo directamente (`file://`) por políticas de seguridad CORS. El comando `npm run dev` levanta un servidor HTTP mínimo para resolverlo.
 
 ---
 
 ## 📁 Estructura del Proyecto
 
-La estructura de carpetas sigue el patrón recomendado para una **SPA escalable con Vanilla JS**:
-
 ```
-/mi-ecommerce-b2b
+b2b-core/
 │
-├── /assets                     ← Archivos estáticos globales
-│   ├── /css
-│   │   ├── variables.css       ← Tokens de diseño: colores, fuentes, radios
-│   │   └── global.css          ← Estilos base y componentes reutilizables
-│   ├── /img                    ← Logos, imágenes de productos, mockups
-│   └── /js
-│       ├── app.js              ← Lógica principal: estado, render, acciones
-│       └── router.js           ← Cambia de "página" sin recargar el browser
+├── index.html                  ← Shell principal: login, modales, slots, whatsapp
 │
-├── /components                 ← Fragmentos de UI que se repiten (Partials)
-│   ├── navbar.html             ← Menú de navegación superior
-│   ├── footer.html             ← Pie de página
-│   ├── sidebar.html            ← Menú lateral de filtros/categorías
-│   └── product-card.html       ← Tarjeta individual de un producto
+├── assets/
+│   ├── css/
+│   │   ├── variables.css       ← Tokens de diseño: colores, radios, sombras, dark mode
+│   │   └── global.css          ← Estilos base, animaciones, glassmorphism, responsivo
+│   └── js/
+│       ├── app.js              ← Estado global, datos maestros, renderizado de vistas
+│       └── router.js           ← Navegación SPA, fetch de partials, login, tema
 │
-├── /pages                      ← Contenido único de cada "pantalla"
-│   ├── login.html              ← Vista de autenticación
-│   ├── catalogo.html           ← Catálogo de productos B2B
-│   ├── carrito-b2b.html        ← Gestión de órdenes al por mayor
-│   └── dashboard.html          ← Panel de control del cliente
+├── components/
+│   ├── sidebar.html            ← Menú lateral (cargado via fetch una sola vez)
+│   └── header.html             ← Header dinámico con título, búsqueda y badge carrito
 │
-└── index.html                  ← El ÚNICO archivo que el browser carga directamente
+├── pages/
+│   ├── catalogo.html           ← Grid de productos con búsqueda en tiempo real
+│   ├── carrito-b2b.html        ← Revisión de orden, resumen y botón de checkout
+│   ├── ordenes.html            ← Historial completo de órdenes con filtros
+│   └── login.html              ← (Referencia visual; el login real está en index.html)
+│
+├── package.json                ← Scripts de servidor local
+└── README.md                   ← Este archivo
 ```
 
 ---
 
-## 🔄 ¿Cómo funciona el Router?
+## 🗂️ Responsabilidad de Archivos Clave
 
-El `router.js` es el **cerebro de la navegación**. Escucha los clics en los botones de navegación y decide qué vista renderizar:
-
-```javascript
-// router.js — Lógica simplificada
-const routes = {
-  'catalog'    : renderCatalog,
-  'cart'       : renderCart,
-  'dashboard'  : renderDashboard,
-  'orders-full': renderOrdersFull,
-};
-
-function navigate(view) {
-  state.view = view;      // 1. Actualiza el estado global
-  render();               // 2. Dispara el re-renderizado
-}
-```
-
-Cada vez que se llama a `navigate('dashboard')`:
-1. Se **ocultan todas las vistas** (`div.view-container → hidden`)
-2. Se **muestra solo la activa** (`div#view-dashboard → visible`)
-3. Se **llama a su función de renderizado** para inyectar el HTML dinámico
+| Archivo | Responsabilidad |
+|---|---|
+| `index.html` | Shell: login con glassmorphism, slots del app, modales, toast, WhatsApp flotante |
+| `app.js` | Estado global (`state`), productos, perfiles B2B, renderizado de vistas, acciones |
+| `router.js` | Navegación, carga de partials via `fetch()`, persistencia en `localStorage`, temas |
+| `variables.css` | Tokens CSS: paleta de colores, variables de tema claro/oscuro |
+| `global.css` | Clases utilitarias, animaciones (`enter-up`, `scale-in`), dark mode, responsivo mobile |
 
 ---
 
-## 🗂️ Responsabilidad de cada archivo
+## 🚀 Características
 
-| Archivo              | Responsabilidad                                                    |
-|---------------------|--------------------------------------------------------------------|
-| `index.html`        | Estructura base: shell, sidebar, modales, slots de vistas          |
-| `assets/js/app.js`  | Estado global, funciones de render, acciones (addToCart, checkout) |
-| `assets/css/styles.css` | Variables CSS, animaciones, glassmorphism, dark mode           |
-| `/pages/*.html`     | (Escalabilidad futura) Contenido modular por vista                 |
-| `/components/*.html`| (Escalabilidad futura) Fragmentos reutilizables cargados por fetch |
-
----
-
-## 🚀 Características Principales
-
-### 💎 Experiencia de Usuario (UX)
-- **Interfaz Premium:** Diseño estilo Apple con Glassmorphism y animaciones fluidas.
-- **Modo Oscuro/Claro:** Selector de tema persistente via `localStorage`.
-- **SPA Real:** Navegación instantánea entre todas las pantallas sin recarga.
-- **Toast Notifications:** Sistema de alertas con animación de entrada/salida.
-- **Cursor y Scroll Progress:** Indicadores visuales premium.
+### 💎 Diseño & UX
+- **Glassmorphism Premium** con backdrop-blur y gradientes mesh animados en el login
+- **Dark Mode / Light Mode** con toggle persistente via `localStorage`
+- **Animaciones fluidas:** micro-animaciones de entrada, hover effects, skeleton loaders
+- **Menú hamburguesa** para navegación en dispositivos móviles (< 800px)
+- **Toast notifications** con íconos y colores según tipo (éxito, error, info)
+- **Botón WhatsApp flotante** en esquina inferior derecha para contacto directo
 
 ### 💼 Lógica de Negocio B2B
-- **Precios por Volumen (Tiers):** Descuentos automáticos según cantidad pedida.
-- **Perfiles de Cliente:** Distribuidor (10%) y Partner Premium (20%).
-- **Gestión de Crédito Corporativo:** Barra de uso, alertas de límite.
-- **Validación de Stock:** Control proactivo en tiempo real.
-- **Carga Masiva (Bulk Import):** Importa SKUs y cantidades desde texto plano.
+- **Precios por Volumen (Tiers):** Precio unitario baja automáticamente según cantidad pedida
+- **Perfiles de Cliente:**
+  - `C-9901` — Sistemas Industriales S.A. (Distribuidor, 10% descuento, crédito $50.000)
+  - `C-8842` — Global Tech Solutions (Partner Premium, 20% descuento, crédito $150.000)
+- **Crédito Corporativo:** Barra de uso en tiempo real, validación antes de confirmar orden
+- **Carga Masiva (Bulk Import):** Importación de SKUs y cantidades via texto plano `ID, CANTIDAD`
+- **Validación de Stock:** Control proactivo al agregar al carrito
+- **Checkout con Generación de Orden:** Estado automático (Aprobado < $5.000 / Pendiente ≥ $5.000)
 
-### 📊 Dashboard Estratégico
-- **Bento Grid de KPIs:** 4 tarjetas con estadísticas clave animadas.
-- **Gráfico de Consumo Mensual:** Barras interactivas con tooltip.
-- **Historial de Órdenes:** Filtros por estado (Todos / Pendientes / Aprobados).
-- **Rastreo Visual de Envíos:** Timeline de 5 pasos con estado en tiempo real.
-- **Factura Imprimible:** Modal con vista de impresión optimizada.
+### 📊 Dashboard
+- **Bento Grid de KPIs:** Pedidos del mes, crédito disponible, envíos en tránsito, ahorro B2B
+- **Gráfico de Barras Interactivo:** Consumo mensual con tooltip al hover
+- **Mini tabla de órdenes recientes** con acceso rápido a factura
+
+### 📋 Historial de Órdenes
+- Filtros: Todos / Pendientes / Aprobados
+- Expansión de fila para ver detalle de productos por orden
+- Modal de **Factura imprimible** con cálculo de IVA (13%)
+- Modal de **Rastreo de envío** con timeline visual de 5 pasos
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-| Capa         | Tecnología                              | Versión  |
-|-------------|------------------------------------------|----------|
-| Estructura  | HTML5 Semántico                          | —        |
-| Estilos     | CSS3 + Tailwind CSS (CDN) + CSS Custom   | v3       |
-| Lógica      | JavaScript ES6+ (Vanilla, sin framework) | ES2022   |
-| Persistencia| `localStorage` (estado del carrito/tema) | Web API  |
-| Iconografía | Lucide Icons                             | Latest   |
-| Fuentes     | Inter (Google Fonts)                     | —        |
+| Capa | Tecnología |
+|---|---|
+| Estructura | HTML5 Semántico |
+| Estilos | CSS3 Custom + Tailwind CSS v3 (CDN) |
+| Lógica | JavaScript ES2022 — Vanilla, sin frameworks |
+| Persistencia | `localStorage` (estado, carrito, tema, sesión) |
+| Iconos | [Lucide Icons](https://lucide.dev/) (CDN) |
+| Servidor dev | `npx serve` (HTTP estático) |
 
 ---
 
-## 📖 Instalación y Uso
+## ⚡ Instalación y Uso
 
-Este proyecto es **100% Vanilla** — no requiere Node.js, npm, ni ninguna compilación.
+### Requisitos
+- Node.js instalado (solo para el servidor de desarrollo)
+- O la extensión **Live Server** en VS Code (alternativa sin Node.js)
+
+### Pasos
 
 ```bash
 # 1. Clona el repositorio
-git clone https://github.com/ByChokeYT/b2b-core.git
+git clone https://github.com/ByChokeYT/Plataforma-E-commerce-B2B-Stack-y-M-dulos.git
 
 # 2. Entra al directorio
-cd b2b-core
+cd Plataforma-E-commerce-B2B-Stack-y-M-dulos
 
-# 3. Abre directamente en el navegador (no necesita servidor)
-open index.html
-# o simplemente arrastra el archivo al navegador
+# 3. Inicia el servidor de desarrollo
+npm run dev
+
+# 4. Abre en el navegador
+# → http://localhost:3000
 ```
 
-> ⚠️ Si en el futuro se migra a **HTML Partials** con `fetch()`, se necesitará un servidor local (ej: `npx serve .` o la extensión Live Server de VS Code) porque los navegadores bloquean `fetch()` sobre `file://` por CORS.
+### Credenciales de prueba
+
+| Usuario | Contraseña | Perfil |
+|---|---|---|
+| `C-9901` | cualquiera | Distribuidor — 10% dto., crédito $50.000 |
+| `C-8842` | cualquiera | Partner Premium — 20% dto., crédito $150.000 |
+
+> El sistema valida que el campo de usuario no esté vacío. La contraseña es libre (prototipo demo).
+
+### Alternativas al servidor (sin Node.js)
+| Opción | Cómo usarla |
+|---|---|
+| VS Code Live Server | Instalar extensión → Clic en "Go Live" |
+| Python | `python -m http.server 3000` en la carpeta del proyecto |
 
 ---
 
-## 📝 Nota Técnica — Estado Centralizado
+## 📝 Estado Global Centralizado
 
-La plataforma usa un **objeto `state` global** como fuente única de verdad, similar al patrón Redux pero en Vanilla JS:
+La aplicación usa un objeto `state` como fuente única de verdad (patrón Redux simplificado):
 
 ```javascript
 let state = {
-  user: CUSTOMER_PROFILES.distributor,  // Perfil activo
-  view: 'catalog',                       // Vista actual
-  cart: [],                              // Items en carrito
-  orders: [...],                         // Historial de órdenes
-  theme: 'light',                        // Tema activo
-  isLoggedIn: false                      // Sesión
+    user: CUSTOMER_PROFILES.distributor, // Perfil corporativo activo
+    view: 'catalog',                      // Vista actual del router
+    cart: [],                             // Ítems en el carrito
+    orders: [...],                        // Historial de órdenes
+    searchTerm: '',                       // Búsqueda activa en catálogo
+    theme: 'light',                       // Tema de la UI
+    isLoggedIn: false                     // Estado de sesión
 };
 ```
 
-Cualquier cambio en `state` dispara `render()`, que actualiza toda la UI de manera reactiva.
+`router.js` persiste y restaura este estado en `localStorage` con `saveState()` / `loadState()`.
 
 ---
 
-Desarrollado con ❤️ por **José Luis Choquevillca** para el sector industrial B2B.
+## 📌 Notas de Desarrollo
+
+- **No uses `file://`** para abrir la app directamente — el `fetch()` del router fallará por CORS.
+- **CSS personalizado + Tailwind:** Se usan en paralelo. Tailwind para layout rápido, CSS custom para animaciones y glassmorphism.
+- **Lucide Icons** se reinicializan con `lucide.createIcons()` después de cada inyección de HTML para que los iconos SVG se rendericen correctamente.
+
+---
+
+Desarrollado con ❤️ por **José Luis Choquevillca** · Sector Industrial B2B

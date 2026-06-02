@@ -24,10 +24,10 @@
     --bg-card:    hsl(0, 0%, 100%);
     --bg-sidebar: hsla(0, 0%, 100%, 0.85);
     
-    /* Tipografía - Aumento de Contraste AAA */
-    --text-main:  hsl(240, 10%, 10%);        /* Deep Black/Blue */
-    --text-body:  hsl(240, 8%, 25%);         /* Much darker for readability */
-    --text-muted: hsl(240, 6%, 45%);         /* Darker muted text */
+    /* Tipografía - Aumento de Contraste Extremo */
+    --text-main:  hsl(240, 10%, 4%);         /* Casi negro total */
+    --text-body:  hsl(240, 8%, 15%);         /* Muy oscuro */
+    --text-muted: hsl(240, 6%, 35%);         /* Gris medio legible */
 
     /* Bordes y efectos - Ultra Thin but Visible */
     --border:        hsla(240, 10%, 10%, 0.08);
