@@ -217,7 +217,7 @@ function renderCatalog() {
         const hasTiers = product.tiers && product.tiers.length > 1;
 
         return `
-        <div class="card-apple group flex flex-col h-full animate-enter-up">
+        <div onclick="openProductQtyModal(${product.id})" class="card-apple group flex flex-col h-full animate-enter-up cursor-pointer">
             <div class="aspect-square relative overflow-hidden rounded-2xl bg-slate-50 dark:bg-slate-900/50 mb-5 shadow-inner">
                 <img src="${product.image}" alt="${product.name}"
                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
@@ -280,9 +280,8 @@ function renderCatalog() {
                         </div>
                     </div>
 
-                    <button onclick="addToCart(${product.id})"
-                        class="w-full py-3.5 bg-blue-600 text-white rounded-xl text-[11px] font-black uppercase tracking-widest
-                               hover:bg-blue-700 active:scale-[0.98] transition-all shadow-xl shadow-blue-500/10">
+                    <button onclick="event.stopPropagation(); openProductQtyModal(${product.id})"
+                        class="btn-premium w-full py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest active:scale-[0.98] transition-all">
                         Añadir al Carrito
                     </button>
                 </div>
@@ -309,8 +308,7 @@ function renderCart() {
                     Añada productos del catálogo para generar una orden de compra corporativa.
                 </p>
                 <button onclick="navigate('catalog')"
-                    class="bg-blue-600 text-white px-8 py-3 rounded-2xl font-bold text-xs
-                           hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20">
+                    class="btn-premium px-8 py-3 rounded-2xl font-bold text-xs active:scale-[0.98] transition-all">
                     Ir al Catálogo
                 </button>
             </div>`;
@@ -456,7 +454,7 @@ function renderDashboard() {
                 </div>
                 <div class="space-y-1">
                     <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">${s.label}</p>
-                    <p class="text-3xl font-black text-slate-900 tracking-tighter">${s.value}</p>
+                    <p class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">${s.value}</p>
                     <div class="flex items-center gap-2 pt-2">
                         <span class="text-[9px] font-black uppercase tracking-widest ${c.text} ${c.bg} px-2 py-0.5 rounded-md">
                             ${c.badge}
@@ -471,19 +469,39 @@ function renderDashboard() {
     const miniTable = document.getElementById('orders-mini-table');
     if (miniTable) {
         miniTable.innerHTML = state.orders.slice(0, 5).map(order => `
-            <tr class="hover:bg-slate-50 transition-colors cursor-pointer" onclick="showInvoice('${order.id}')">
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer border-b border-slate-50 dark:border-slate-800" onclick="showInvoice('${order.id}')">
                 <td class="px-6 py-3.5 font-bold text-blue-600 font-mono text-xs">${order.id}</td>
                 <td class="px-6 py-3.5 text-[10px] text-slate-400">${order.date}</td>
-                <td class="px-6 py-3.5 font-bold text-slate-900 text-xs">Bs. ${order.total.toFixed(2)}</td>
+                <td class="px-6 py-3.5 font-bold text-slate-900 dark:text-white text-xs">Bs. ${order.total.toFixed(2)}</td>
                 <td class="px-6 py-3.5 text-right">
                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold
                         ${order.status === 'Aprobado' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
-                        <span class="w-1 h-1 rounded-full bg-current"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
                         ${order.status}
                     </span>
                 </td>
             </tr>`).join('');
     }
+
+    // Renderizar indicador radial de crédito (Circular Gauge)
+    const used = state.user.usedCredit;
+    const limit = state.user.creditLimit;
+    const available = Math.max(0, limit - used);
+    const percent = Math.min(100, (used / limit) * 100);
+
+    const gaugeCircle = document.getElementById('credit-gauge-circle');
+    const gaugePercent = document.getElementById('credit-gauge-percent');
+    const gaugeUsed = document.getElementById('credit-gauge-used');
+    const gaugeAvailable = document.getElementById('credit-gauge-available');
+
+    if (gaugeCircle) {
+        // Circumference = 2 * PI * r = 2 * 3.14159 * 40 = 251.2
+        const strokeDashOffset = 251.2 - (251.2 * percent) / 100;
+        gaugeCircle.style.strokeDashoffset = strokeDashOffset;
+    }
+    if (gaugePercent) gaugePercent.innerText = `${Math.round(percent)}%`;
+    if (gaugeUsed) gaugeUsed.innerText = `Bs. ${used.toLocaleString()}`;
+    if (gaugeAvailable) gaugeAvailable.innerText = `Bs. ${available.toLocaleString()}`;
 
     renderChart();
 }
@@ -491,11 +509,40 @@ function renderDashboard() {
 // ─────────────────────────────────────────────────────────
 // RENDERIZADO: GRÁFICO DE BARRAS
 // ─────────────────────────────────────────────────────────
+// Generador de curvas Bezier cúbicas suavizadas (Spline de Figma)
+function getBezierPath(points) {
+    if (points.length === 0) return "";
+    let d = `M ${points[0].x.toFixed(1)},${points[0].y.toFixed(1)}`;
+    for (let i = 0; i < points.length - 1; i++) {
+        const p0 = points[i];
+        const p1 = points[i + 1];
+        // Puntos de control para suavizado
+        const cpX1 = p0.x + (p1.x - p0.x) * 0.45;
+        const cpY1 = p0.y;
+        const cpX2 = p0.x + (p1.x - p0.x) * 0.55;
+        const cpY2 = p1.y;
+        d += ` C ${cpX1.toFixed(1)},${cpY1.toFixed(1)} ${cpX2.toFixed(1)},${cpY2.toFixed(1)} ${p1.x.toFixed(1)},${p1.y.toFixed(1)}`;
+    }
+    return d;
+}
+
 function renderChart() {
     const chart = document.getElementById('revenue-chart');
     if (!chart) return;
 
-    const data   = [30, 45, 25, 60, 80, 55, 90, 65, 85, 40, 75, 90];
+    // Generar consumo dinámico sumando las órdenes reales al seed
+    const baseData = [30, 45, 25, 60, 80, 55, 90, 65, 85, 40, 75, 90];
+    
+    // Sumar órdenes del usuario en los meses correspondientes
+    state.orders.forEach(order => {
+        if (!order.date) return;
+        const monthNum = parseInt(order.date.split('-')[1]) - 1; // 0-indexed
+        if (monthNum >= 0 && monthNum < 12) {
+            // Cada 1000 Bs sumados aumentan la barra o punto del mes en un valor de 5 (escalado visual)
+            baseData[monthNum] += Math.min(30, (order.total / 1000) * 4);
+        }
+    });
+
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     
     // Dimensiones del SVG
@@ -504,39 +551,39 @@ function renderChart() {
     const paddingX = 25;
     const paddingY = 20;
 
-    const stepX = (width - paddingX * 2) / (data.length - 1);
+    const stepX = (width - paddingX * 2) / (baseData.length - 1);
     
     // Mapear datos a coordenadas X e Y
-    const points = data.map((val, i) => {
+    const points = baseData.map((val, i) => {
         const x = paddingX + i * stepX;
-        const y = height - paddingY - (val / 100) * (height - paddingY * 2);
+        const y = height - paddingY - (val / 130) * (height - paddingY * 2); // Dividir por 130 para dar margen superior
         return { x, y, val, month: months[i] };
     });
 
-    // Generar path del gráfico de línea
-    const dLine = "M " + points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ");
+    // Generar path del gráfico de línea usando curvas suavizadas
+    const dLine = getBezierPath(points);
     
     // Generar path del gráfico de área (cierra abajo en el eje X)
     const dArea = dLine + ` L ${points[points.length-1].x.toFixed(1)},${(height - paddingY).toFixed(1)} L ${points[0].x.toFixed(1)},${(height - paddingY).toFixed(1)} Z`;
 
     // Renderizar el SVG completo
     chart.innerHTML = `
-        <div class="relative w-full h-full flex flex-col justify-between">
+        <div class="relative w-full h-full flex flex-col justify-between select-none">
             <svg viewBox="0 0 ${width} ${height}" class="w-full h-full overflow-visible">
                 <defs>
                     <!-- Gradiente del área -->
                     <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.25" />
+                        <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.22" />
                         <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.00" />
                     </linearGradient>
                     <!-- Gradiente de la línea -->
                     <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
                         <stop offset="0%" stop-color="var(--primary)" />
-                        <stop offset="100%" stop-color="var(--primary)" />
+                        <stop offset="100%" stop-color="hsl(280, 85%, 60%)" />
                     </linearGradient>
                     <!-- Filtro de sombra para los puntos -->
                     <filter id="dotShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15" />
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2" flood-color="var(--primary)" />
                     </filter>
                 </defs>
                 
@@ -545,9 +592,12 @@ function renderChart() {
                 <line x1="${paddingX}" y1="${(height / 2).toFixed(1)}" x2="${width - paddingX}" y2="${(height / 2).toFixed(1)}" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,4" />
                 <line x1="${paddingX}" y1="${height - paddingY}" x2="${width - paddingX}" y2="${height - paddingY}" stroke="var(--border)" stroke-width="1" />
 
+                <!-- Guía vertical de hover -->
+                <line id="chart-guideline" x1="0" y1="${paddingY}" x2="0" y2="${height - paddingY}" stroke="var(--primary)" stroke-width="1" stroke-dasharray="3,3" class="hidden pointer-events-none transition-all duration-75" />
+
                 <!-- Eje y etiquetas de meses -->
                 ${points.map(p => `
-                    <text x="${p.x.toFixed(1)}" y="${height - 4}" class="fill-slate-400 font-bold text-[8px]" text-anchor="middle">
+                    <text x="${p.x.toFixed(1)}" y="${height - 4}" class="fill-slate-400 dark:fill-slate-500 font-black text-[7.5px] uppercase tracking-wider" text-anchor="middle">
                         ${p.month}
                     </text>
                 `).join('')}
@@ -561,20 +611,20 @@ function renderChart() {
                 <!-- Puntos interactivos -->
                 ${points.map((p, i) => `
                     <g class="group/dot cursor-pointer" 
-                       onmouseover="showChartTooltip(event, '${p.month}', 'Bs. ${(p.val * 2.4).toFixed(0)}k')"
+                       onmouseover="showChartTooltip(event, '${p.month}', 'Bs. ${(p.val * 2.4).toFixed(0)}k', ${p.x.toFixed(1)})"
                        onmouseout="hideChartTooltip()">
                         <!-- Zona sensible al tacto/hover más grande -->
-                        <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="12" fill="transparent" />
+                        <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="10" fill="transparent" />
                         <!-- Círculo visual -->
-                        <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4.5" 
-                                class="chart-dot fill-white stroke-[var(--primary)] stroke-2 transition-all duration-200" 
+                        <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" 
+                                class="chart-dot fill-white stroke-[var(--primary)] stroke-[2.5] transition-all duration-200 group-hover/dot:r-6 group-hover/dot:stroke-[hsl(280,85%,60%)]" 
                                 filter="url(#dotShadow)" />
                     </g>
                 `).join('')}
             </svg>
 
             <!-- Tooltip Flotante de HTML -->
-            <div id="chart-tooltip" class="absolute hidden bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-xl shadow-lg border border-slate-700/50 pointer-events-none transform -translate-x-1/2 -translate-y-full transition-all duration-200">
+            <div id="chart-tooltip" class="absolute hidden bg-slate-900/90 dark:bg-slate-950/90 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shadow-lg border border-slate-700/50 pointer-events-none transform -translate-x-1/2 -translate-y-full transition-all duration-200 backdrop-blur-md">
                 <span id="tooltip-text"></span>
             </div>
         </div>
@@ -582,9 +632,10 @@ function renderChart() {
 }
 
 // Helpers globales para el tooltip interactivo del gráfico
-window.showChartTooltip = (event, month, value) => {
+window.showChartTooltip = (event, month, value, xCoord) => {
     const tooltip = document.getElementById('chart-tooltip');
     const text = document.getElementById('tooltip-text');
+    const guideline = document.getElementById('chart-guideline');
     if (!tooltip || !text) return;
 
     // Calcular posición relativa al contenedor
@@ -598,11 +649,19 @@ window.showChartTooltip = (event, month, value) => {
     tooltip.style.left = `${posX}px`;
     tooltip.style.top = `${posY}px`;
     tooltip.classList.remove('hidden');
+
+    if (guideline && xCoord !== undefined) {
+        guideline.setAttribute('x1', xCoord);
+        guideline.setAttribute('x2', xCoord);
+        guideline.classList.remove('hidden');
+    }
 };
 
 window.hideChartTooltip = () => {
     const tooltip = document.getElementById('chart-tooltip');
+    const guideline = document.getElementById('chart-guideline');
     if (tooltip) tooltip.classList.add('hidden');
+    if (guideline) guideline.classList.add('hidden');
 };
 
 // ─────────────────────────────────────────────────────────
@@ -1049,4 +1108,158 @@ window.initBackendData = async () => {
     } catch (e) {
         console.log('[B2B-API] Usando perfiles locales (Servidor Go offline).');
     }
+};
+
+// Listener global para mover el efecto de brillo (Figma Glow reflection) en tarjetas card-apple
+document.addEventListener('mousemove', e => {
+    document.querySelectorAll('.card-apple').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+    });
+});
+
+// ─── MODAL DE CANTIDAD B2B INTERACTIVO ─────────────────────
+window.openProductQtyModal = (productId) => {
+    const product = PRODUCTS.find(p => p.id === productId);
+    if (!product) return;
+
+    state.selectedProduct = product;
+
+    // Resetear cantidad a 1
+    const qtyInput = document.getElementById('modal-prod-qty-input');
+    if (qtyInput) qtyInput.value = 1;
+
+    // Rellenar datos
+    const modalImg = document.getElementById('modal-prod-img');
+    const modalName = document.getElementById('modal-prod-name');
+    const modalCategory = document.getElementById('modal-prod-category');
+    const modalStock = document.getElementById('modal-prod-stock-info');
+
+    if (modalImg) modalImg.src = product.image;
+    if (modalName) modalName.innerText = product.name;
+    if (modalCategory) modalCategory.innerText = product.category;
+    if (modalStock) modalStock.innerText = `Stock disponible: ${product.stock} unidades`;
+
+    // Renderizar la escala de precios
+    const tiersContainer = document.getElementById('modal-prod-tiers-container');
+    if (tiersContainer) {
+        const hasTiers = product.tiers && product.tiers.length > 1;
+        if (hasTiers) {
+            tiersContainer.innerHTML = `
+                <p class="font-bold text-[9px] uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-1">
+                    <i data-lucide="tags" size="10"></i> Escala de Precios B2B
+                </p>
+                <div class="grid grid-cols-3 gap-2 text-center font-mono">
+                    ${product.tiers.map(t => `
+                        <div class="bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-100 dark:border-slate-700/60">
+                            <span class="block text-[8px] text-slate-450 dark:text-slate-400 font-bold">${t.min}+ uds</span>
+                            <span class="font-bold text-[11px] text-slate-900 dark:text-white">Bs. ${(t.price * (1 - state.user.discount)).toFixed(0)}</span>
+                        </div>
+                    `).join('')}
+                </div>`;
+        } else {
+            tiersContainer.innerHTML = `
+                <div class="py-3 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-[10px] text-slate-450">
+                    Tarifa Plana Corporativa (Sin escala)
+                </div>`;
+        }
+    }
+
+    updateModalTotals();
+    openModal('product-qty');
+    lucide.createIcons();
+};
+
+window.adjustModalQty = (delta) => {
+    const qtyInput = document.getElementById('modal-prod-qty-input');
+    if (!qtyInput || !state.selectedProduct) return;
+
+    let qty = parseInt(qtyInput.value) || 1;
+    qty = Math.max(1, qty + delta);
+
+    if (qty > state.selectedProduct.stock) {
+        showToast('Stock máximo alcanzado', 'error');
+        qty = state.selectedProduct.stock;
+    }
+
+    qtyInput.value = qty;
+    updateModalTotals();
+};
+
+window.updateModalTotals = () => {
+    const qtyInput = document.getElementById('modal-prod-qty-input');
+    const unitPriceEl = document.getElementById('modal-prod-unit-price');
+    const subtotalEl = document.getElementById('modal-prod-subtotal');
+    const addBtn = document.getElementById('modal-add-btn');
+
+    if (!qtyInput || !state.selectedProduct) return;
+
+    let qty = parseInt(qtyInput.value);
+    if (isNaN(qty) || qty < 1) {
+        qty = 1;
+    }
+
+    const product = state.selectedProduct;
+
+    // Controlar exceso de stock
+    if (qty > product.stock) {
+        qty = product.stock;
+        qtyInput.value = qty;
+        showToast(`Cantidad ajustada al stock disponible (${product.stock})`, 'warning');
+    }
+
+    const unitPrice = calculateUnitPrice(product, qty);
+    const subtotal = unitPrice * qty;
+
+    if (unitPriceEl) unitPriceEl.innerText = `Bs. ${unitPrice.toFixed(2)}`;
+    if (subtotalEl) subtotalEl.innerText = `Bs. ${subtotal.toFixed(2)}`;
+
+    // Controlar botón de añadir
+    if (addBtn) {
+        const hasStock = product.stock > 0;
+        addBtn.disabled = !hasStock;
+        addBtn.style.opacity = hasStock ? '1' : '0.5';
+    }
+};
+
+window.confirmAddToCart = () => {
+    const qtyInput = document.getElementById('modal-prod-qty-input');
+    if (!qtyInput || !state.selectedProduct) return;
+
+    const qty = parseInt(qtyInput.value) || 1;
+    const product = state.selectedProduct;
+
+    const existing = state.cart.find(item => item.id === product.id);
+    const currentQty = existing ? existing.quantity : 0;
+
+    if (currentQty + qty > product.stock) {
+        showToast(`Stock insuficiente. Ya tienes ${currentQty} en el carrito y el stock total es ${product.stock}`, 'error');
+        return;
+    }
+
+    if (existing) {
+        existing.quantity += qty;
+    } else {
+        state.cart.push({ ...product, quantity: qty });
+    }
+
+    showToast(`Añadido: ${qty}x ${product.name}`, 'success');
+
+    if (typeof window.updateCartBadge === 'function') {
+        window.updateCartBadge();
+    } else {
+        const badge = document.getElementById('cart-badge');
+        if (badge) {
+            const count = state.cart.reduce((a, i) => a + i.quantity, 0);
+            badge.innerText = count;
+            badge.classList.toggle('hidden', count === 0);
+        }
+    }
+
+    if (typeof saveState === 'function') saveState();
+
+    closeModal('product-qty');
 };

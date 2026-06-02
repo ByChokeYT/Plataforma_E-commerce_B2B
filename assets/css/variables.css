@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════
-   variables.css — Design Tokens B2B Core
-   Contiene: colores, fuentes, radios, transiciones
+   variables.css — Design Tokens B2B Core (Figma Refined)
+   Contiene: colores, fuentes, radios, transiciones, degradados
    Importado en: index.html (antes que global.css)
    ═══════════════════════════════════════════════════════ */
 
@@ -8,96 +8,106 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-/* ─── Modo Claro (por defecto) ─── */
+/* ─── Modo Claro (Figma Luxury Light) ─── */
 :root {
-    /* Colores primarios - Azul Zafiro Eléctrico Premium */
-    --primary:        hsl(222, 90%, 54%);   
-    --primary-glass:  hsla(222, 90%, 54%, 0.08);
-    --primary-hover:  hsl(222, 90%, 46%);
+    /* Colores primarios - Azul/Indigo B2B Corporativo */
+    --primary:          hsl(221, 83%, 53%);   
+    --primary-glass:    hsla(221, 83%, 53%, 0.06);
+    --primary-hover:    hsl(221, 83%, 45%);
+    --primary-gradient: linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(242, 60%, 55%) 100%);
+    --btn-text:         #ffffff;
     
-    --danger:         hsl(0, 75%, 50%);
-    --success:        hsl(150, 70%, 30%);   
-    --success-light:  hsl(150, 70%, 97%);
-    --warning:        hsl(38, 85%, 45%);
-    --warning-light:  hsl(38, 85%, 97%);
+    --danger:           hsl(360, 75%, 50%);
+    --success:          hsl(152, 68%, 34%);   
+    --success-light:    hsl(152, 68%, 96%);
+    --warning:          hsl(38, 92%, 48%);
+    --warning-light:    hsl(38, 92%, 97%);
 
-    /* Fondos - Gradiente Soft y Vidrio Frosted Premium (Estilo Apple/macOS) */
-    --bg-main:        radial-gradient(circle at 0% 0%, hsl(218, 60%, 98%) 0%, hsl(220, 40%, 96%) 50%, hsl(215, 25%, 93%) 100%);        
-    --bg-card:        rgba(255, 255, 255, 0.80);
-    --bg-sidebar:     rgba(255, 255, 255, 0.60);
-    --bg-input:       rgba(255, 255, 255, 0.50);
-    --bg-input-hover: rgba(255, 255, 255, 0.85);
+    /* Fondos - macOS style frosted glass layout */
+    --bg-main:          radial-gradient(circle at 0% 0%, hsl(220, 60%, 98%) 0%, hsl(224, 40%, 96%) 50%, hsl(220, 20%, 94%) 100%);        
+    --bg-card:          rgba(255, 255, 255, 0.75);
+    --bg-sidebar:       rgba(255, 255, 255, 0.55);
+    --bg-input:         rgba(255, 255, 255, 0.45);
+    --bg-input-hover:   rgba(255, 255, 255, 0.85);
     
-    /* Mesh Gradients - Desactivados (Transparentes) */
-    --mesh-1:         transparent;
-    --mesh-2:         transparent;
-    --mesh-3:         transparent;
+    /* Mesh Gradients Ambientales */
+    --mesh-1:           hsla(245, 80%, 58%, 0.05);
+    --mesh-2:           hsla(185, 100%, 48%, 0.04);
+    --mesh-3:           hsla(280, 85%, 60%, 0.04);
 
-    /* Tipografía - Alta Legibilidad en Azul/Gris Profundo */
-    --text-main:      hsl(222, 47%, 12%);         
-    --text-body:      hsl(215, 20%, 32%);         
-    --text-muted:     hsl(218, 15%, 52%);         
+    /* Tipografía - Alta Legibilidad */
+    --text-main:        hsl(224, 60%, 10%);         
+    --text-body:        hsl(220, 20%, 30%);         
+    --text-muted:       hsl(220, 15%, 50%);         
 
     /* Bordes y efectos */
-    --border:         hsla(222, 20%, 15%, 0.06);
-    --border-hover:   hsla(222, 20%, 15%, 0.12);
-    --border-glass:   hsla(222, 20%, 15%, 0.06);
-    --ring-focus:     hsla(222, 90%, 54%, 0.15);
+    --border:           hsla(224, 20%, 10%, 0.05);
+    --border-hover:     hsla(224, 20%, 10%, 0.10);
+    --border-glass:     hsla(224, 20%, 10%, 0.05);
+    --ring-focus:       hsla(245, 80%, 58%, 0.15);
 
     /* Radios */
-    --radius-full:    9999px;
-    --radius-2xl:     16px;  
-    --radius-xl:      12px;
-    --radius-lg:      10px;
-    --radius-sm:      6px;
+    --radius-full:      9999px;
+    --radius-3xl:       24px;
+    --radius-2xl:       18px;  
+    --radius-xl:        14px;
+    --radius-lg:        10px;
+    --radius-sm:        6px;
 
     /* Transiciones */
-    --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow:  0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast:  0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Sombras - Suaves, profundas y Apple-style */
-    --shadow-sm:      0 2px 8px rgba(31, 41, 55, 0.03), 0 1px 2px rgba(31, 41, 55, 0.01);
-    --shadow-md:      0 12px 24px -4px rgba(31, 41, 55, 0.05), 0 4px 12px -2px rgba(31, 41, 55, 0.02);
-    --shadow-lg:      0 24px 48px -12px rgba(31, 41, 55, 0.08), 0 8px 24px -4px rgba(31, 41, 55, 0.03);
+    --shadow-sm:        0 2px 12px rgba(31, 41, 55, 0.02), 0 1px 2px rgba(31, 41, 55, 0.01);
+    --shadow-md:        0 16px 36px -4px rgba(31, 41, 55, 0.04), 0 4px 16px -2px rgba(31, 41, 55, 0.01);
+    --shadow-lg:        0 32px 64px -16px rgba(31, 41, 55, 0.06), 0 12px 32px -4px rgba(31, 41, 55, 0.02);
 }
 
-/* ─── Modo Oscuro — Deep Industrial ─── */
+/* ─── Modo Oscuro (Cyber-Industrial Figma Dark) ─── */
 [data-theme="dark"] {
-    --primary:        hsl(212, 70%, 50%);   /* Azul Acero Industrial */
-    --primary-glass:  hsla(212, 70%, 50%, 0.12);
-    --primary-hover:  hsl(212, 70%, 56%);
+    --primary:          hsl(217, 91%, 60%);   /* Azul Real Corporativo */
+    --primary-glass:    hsla(217, 91%, 60%, 0.12);
+    --primary-hover:    hsl(217, 91%, 50%);
+    --primary-gradient: linear-gradient(135deg, hsl(217, 91%, 60%) 0%, hsl(235, 75%, 62%) 100%);
+    --btn-text:         #ffffff;
     
-    --success:        hsl(150, 50%, 40%);
-    --success-light:  hsla(150, 50%, 40%, 0.1);
-    --warning:        hsl(35, 70%, 50%);
-    --warning-light:  hsla(35, 70%, 50%, 0.1);
-    --danger:         hsl(0, 60%, 55%);
+    --success:          hsl(150, 75%, 42%);
+    --success-light:    hsla(150, 75%, 42%, 0.12);
+    --warning:          hsl(38, 95%, 52%);
+    --warning-light:    hsla(38, 95%, 52%, 0.12);
+    --danger:           hsl(360, 80%, 58%);
 
-    --bg-main:        hsl(215, 20%, 8%);      
-    --bg-card:        hsl(215, 20%, 12%);      
-    --bg-sidebar:     hsl(215, 20%, 10%);
-    --bg-input:       hsl(215, 15%, 16%);
-    --bg-input-hover: hsl(215, 15%, 18%);
+    --bg-main:          hsl(224, 25%, 8%);      
+    --bg-card:          rgba(15, 23, 42, 0.70);      
+    --bg-sidebar:       rgba(11, 17, 32, 0.60);
+    --bg-input:         rgba(30, 41, 59, 0.40);
+    --bg-input-hover:   rgba(30, 41, 59, 0.60);
 
-    /* Mesh Dark - Desactivados (Transparentes) */
-    --mesh-1:         transparent;
-    --mesh-2:         transparent;
-    --mesh-3:         transparent;
+    /* Mesh Dark - Auras resplandecientes en el fondo */
+    --mesh-1:           hsla(245, 80%, 58%, 0.12);
+    --mesh-2:           hsla(185, 100%, 48%, 0.08);
+    --mesh-3:           hsla(280, 85%, 60%, 0.08);
     
-    --text-main:      hsl(210, 15%, 95%);
-    --text-body:      hsl(215, 10%, 84%);
-    --text-muted:     hsl(215, 12%, 68%);
+    --text-main:        hsl(210, 20%, 98%);
+    --text-body:        hsl(215, 15%, 85%);
+    --text-muted:       hsl(215, 12%, 62%);
     
-    --border:         hsla(215, 15%, 85%, 0.08);
-    --border-hover:   hsla(215, 15%, 85%, 0.15);
-    --border-glass:   hsla(215, 15%, 85%, 0.08);
+    --border:           hsla(215, 15%, 85%, 0.07);
+    --border-hover:     hsla(215, 15%, 85%, 0.15);
+    --border-glass:     hsla(215, 15%, 85%, 0.06);
+    --ring-focus:       hsla(185, 100%, 48%, 0.25);
     
-    --shadow-sm:      0 2px 8px rgba(0,0,0,0.3);
-    --shadow-md:      0 6px 20px rgba(0,0,0,0.4);
-    --shadow-lg:      0 15px 40px rgba(0,0,0,0.5);
+    --shadow-sm:        0 2px 10px rgba(0,0,0,0.3);
+    --shadow-md:        0 10px 30px rgba(0,0,0,0.45);
+    --shadow-lg:        0 25px 60px rgba(0,0,0,0.6);
 }
 
 /* ─── Tipografía base ─── */
+html, body {
+    height: 100vh;
+    overflow: hidden;
+}
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg-main);
@@ -106,5 +116,6 @@ body {
     line-height: 1.5;
     letter-spacing: -0.01em;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    position: relative;
 }
+

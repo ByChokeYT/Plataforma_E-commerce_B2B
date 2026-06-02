@@ -5,8 +5,24 @@
    ═══════════════════════════════════════════════════════ */
 
 /* --- Limpieza y Reseteos --- */
-body::before, .bg-glow {
-    display: none !important;
+* {
+    box-sizing: border-box;
+}
+
+/* Auras luminosas de fondo (Figma Ambient Glow) */
+.glow-orb {
+    position: absolute;
+    border-radius: var(--radius-full);
+    filter: blur(130px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.12;
+    mix-blend-mode: normal;
+    transition: all 0.8s var(--transition-slow);
+}
+[data-theme="dark"] .glow-orb {
+    opacity: 0.22;
+    mix-blend-mode: screen;
 }
 
 /* ─────────────────────────────────────────────────────
@@ -107,12 +123,12 @@ h4, .h4 { font-size: 1rem; font-weight: 700; }
 }
 
 /* ─────────────────────────────────────────────────────
-   TARJETAS (Apple Style Refined)
+   TARJETAS (Apple Style Refined - Figma Border Glow)
    ───────────────────────────────────────────────────── */
 .card-apple {
     background: var(--bg-card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: var(--radius-2xl);
     padding: 1.5rem;
@@ -122,20 +138,42 @@ h4, .h4 { font-size: 1rem; font-weight: 700; }
     box-shadow: var(--shadow-sm);
 }
 
+/* Efecto de borde con gradiente de Figma */
+.card-apple::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-2xl);
+    padding: 1px; /* grosor del borde */
+    background: linear-gradient(135deg, var(--primary) 0%, transparent 60%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s var(--transition-slow);
+    z-index: 2;
+}
+
 .card-apple::after {
     content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(circle at top left, hsla(0, 0%, 100%, 0.15), transparent 50%);
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--primary-glass) 0%, transparent 60%);
     opacity: 0;
     transition: opacity 0.4s;
+    z-index: 1;
 }
 
 .card-apple:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary-glass);
+    transform: translateY(-6px) scale(1.005);
+    box-shadow: var(--shadow-lg), 0 0 25px var(--primary-glass);
+    border-color: transparent;
+}
+
+.card-apple:hover::before {
+    opacity: 1;
 }
 
 .card-apple:hover::after {
@@ -143,18 +181,25 @@ h4, .h4 { font-size: 1rem; font-weight: 700; }
 }
 
 /* ─────────────────────────────────────────────────────
-   NAVEGACIÓN LATERAL
+   NAVEGACIÓN LATERAL Y MAQUETACIÓN
    ───────────────────────────────────────────────────── */
+#sidebar-slot {
+    width: 240px;
+    flex-shrink: 0;
+}
+
 #sidebar {
     position: fixed !important;
-    left: 0;
+    left: 0 !important;
+    right: auto !important;
     top: 0;
     height: 100vh;
     z-index: 50;
     width: 240px;
     background: var(--bg-sidebar);
-    border-right: 1px solid var(--border);
-    transition: transform 0.4s var(--transition-slow), width 0.4s var(--transition-slow);
+    border-right: 1px solid var(--border) !important;
+    border-left: none !important;
+    /* No generic transitions on PC desktop for position/width to avoid movement/layout-shifts */
 }
 
 .nav-btn {
@@ -162,49 +207,61 @@ h4, .h4 { font-size: 1rem; font-weight: 700; }
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
-    border-radius: var(--radius-xl);
+    border-radius: 0 var(--radius-xl) var(--radius-xl) 0; /* Left side flat, right rounded */
     color: var(--text-muted);
     font-size: 0.875rem;
     font-weight: 600;
     transition: all 0.25s var(--transition-fast);
     border: 1px solid transparent;
+    border-left: 4px solid transparent !important;
+    border-right: none !important;
     user-select: none;
 }
 
 .nav-btn:hover {
     background: var(--bg-input);
     color: var(--text-main);
-    transform: translateX(2px);
+    transform: translateX(2px); /* Hover slides slightly right to show interaction */
 }
 
 nav .active {
-    background: var(--primary) !important;
-    color: white !important;
+    background: var(--primary-glass) !important;
+    color: var(--primary) !important;
     font-weight: 700;
-    box-shadow: 0 8px 20px var(--primary-glass);
-    border-color: transparent !important;
+    border-left-color: var(--primary) !important;
+    border-right-color: transparent !important;
+    box-shadow: none !important;
 }
 
 nav .active i {
-    color: white !important;
+    color: var(--primary) !important;
 }
 
 #main-content {
-    margin-left: 240px;
-    transition: margin-left 0.4s var(--transition-slow);
+    /* Flex handles spacing automatically. No margin-left needed on PC desktop */
+    height: 100vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
 @media (max-width: 1024px) {
+    #sidebar-slot {
+        width: 0 !important;
+    }
     #sidebar {
-        transform: translateX(-100%);
+        transform: translateX(-100%); /* Hidden to the left */
         width: 270px;
-        box-shadow: 20px 0 50px rgba(0,0,0,0.1);
+        box-shadow: 20px 0 50px rgba(0,0,0,0.1); /* Cast shadow rightwards */
         background: var(--bg-card);
+        /* Mobile menu transitions */
+        transition: transform 0.4s var(--transition-slow);
     }
     #sidebar.show {
         transform: translateX(0);
     }
-    #main-content { margin-left: 0 !important; }
+    #main-content {
+        margin-left: 0 !important;
+    }
 }
 
 /* ─────────────────────────────────────────────────────
@@ -228,11 +285,21 @@ input:focus, textarea:focus {
     box-shadow: 0 0 0 4px var(--ring-focus) !important;
 }
 
-/* SCROLLBAR */
-::-webkit-scrollbar       { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+/* SCROLLBAR ELEGANTE Y PREMIUM */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
 
 /* SKELETON */
 .skeleton {
@@ -371,5 +438,43 @@ input:focus, textarea:focus {
 
 /* Fix login background to transparent-ish inside mesh */
 #view-login {
-    background-color: hsl(222, 25%, 5%) !important;
+    background-color: hsl(224, 25%, 5%) !important;
+}
+
+/* ─────────────────────────────────────────────────────
+   BOTONES PREMIUM (Figma Style)
+   ───────────────────────────────────────────────────── */
+.btn-premium {
+    background: var(--primary) !important;
+    color: var(--btn-text, white) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: all 0.2s var(--transition-fast) !important;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    cursor: pointer;
+    font-weight: 700;
+}
+.btn-premium:hover {
+    background: var(--primary-hover) !important;
+    transform: translateY(-1.5px);
+    box-shadow: var(--shadow-md) !important;
+}
+.btn-premium:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.btn-secondary-premium {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: all 0.3s var(--transition-fast) !important;
+    cursor: pointer;
+}
+.btn-secondary-premium:hover {
+    background: var(--bg-input-hover) !important;
+    border-color: var(--border-hover) !important;
+    transform: translateY(-1px);
 }

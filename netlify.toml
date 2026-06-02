@@ -1,0 +1,44 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# netlify.toml — Configuración de Despliegue en Netlify
+# 
+# Propósito:
+#   1. Define la raíz del proyecto para alojar la Single Page Application (SPA).
+#   2. Configura reglas de redirección para evitar errores 404 al recargar rutas de la SPA.
+#   3. Documenta la conexión a base de datos mediante Netlify Blobs / Connectors.
+# ══════════════════════════════════════════════════════════════════════════════
+
+[build]
+  # Carpeta a publicar (directorio raíz que contiene index.html, assets, pages, etc.)
+  publish = "."
+
+# ─── REDIRECCIONES DE API (PROXY) ─────────────────────────────────────────────
+# Si despliegas tu Backend de Go en otra plataforma (ej. Railway, Render, Fly.io),
+# puedes habilitar este proxy para que las llamadas a "/api/*" se dirijan allí sin
+# problemas de CORS.
+#
+# [[redirects]]
+#   from = "/api/*"
+#   to = "https://tu-servidor-backend-go.railway.app/api/:splat"
+#   status = 200
+#   force = true
+
+# ─── REDIRECCIÓN SPA (CATCH-ALL) ──────────────────────────────────────────────
+# Redirige todas las rutas URL de navegación al archivo index.html para que el
+# Client-Side Router (router.js) procese la vista de forma nativa en la SPA.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ─── CONFIGURACIÓN DE BASE DE DATOS / PERSISTENCIA EN NETLIFY ────────────────
+# Nota para el equipo de desarrollo:
+# Netlify soporta base de datos nativa ("Netlify Blobs") y conectores para persistir datos.
+# Si deseas migrar la API REST de Go a Netlify Edge/Serverless Functions para guardar 
+# órdenes en una base de datos en la nube (ej. PostgreSQL, Supabase, MongoDB):
+#
+#   1. Instala el conector en Netlify:
+#      $ netlify integration:create
+#   2. Define tus variables de entorno para la base de datos en la consola de Netlify:
+#      DATABASE_URL="postgresql://user:password@host:port/dbname"
+#   3. Utiliza Netlify Blobs en tus Serverless Functions (/netlify/functions/orders.js)
+#      para almacenar datos clave-valor de forma ultrarrápida en el Edge.
