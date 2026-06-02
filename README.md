@@ -9,6 +9,35 @@ Una plataforma de E-commerce B2B (Business-to-Business) de alto rendimiento, dis
 
 ---
 
+## 🖥️ Vista Previa del Proyecto
+
+<div align="center">
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td align="center" width="50%">
+        <b>Pantalla de Login Glassmorphic</b><br>
+        <img src="assets/img/login.png" width="100%" alt="Login Screen">
+      </td>
+      <td align="center" width="50%">
+        <b>Catálogo de Suministros (Modo Oscuro)</b><br>
+        <img src="assets/img/catalog.png" width="100%" alt="Catalog Screen">
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="50%">
+        <b>Dashboard Corporativo</b><br>
+        <img src="assets/img/dashboard.png" width="100%" alt="Dashboard Screen">
+      </td>
+      <td align="center" width="50%">
+        <b>Resumen del Pedido (Carrito)</b><br>
+        <img src="assets/img/cart.png" width="100%" alt="Cart Screen">
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
 ## 🧠 Arquitectura: ¿SPA o HTML Partials?
 
 Este proyecto implementa una **SPA (Single Page Application)** construida con **Vanilla JavaScript puro**, sin frameworks externos.
