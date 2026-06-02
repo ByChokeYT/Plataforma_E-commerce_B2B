@@ -114,12 +114,12 @@ b2b-core/
 ### 💼 Lógica de Negocio B2B
 - **Precios por Volumen (Tiers):** Precio unitario baja automáticamente según cantidad pedida
 - **Perfiles de Cliente:**
-  - `C-9901` — Sistemas Industriales S.A. (Distribuidor, 10% descuento, crédito $50.000)
-  - `C-8842` — Global Tech Solutions (Partner Premium, 20% descuento, crédito $150.000)
+  - `C-9901` — Sistemas Industriales S.A. (Distribuidor, 10% descuento, crédito Bs. 50.000)
+  - `C-8842` — Global Tech Solutions (Partner Premium, 20% descuento, crédito Bs. 150.000)
 - **Crédito Corporativo:** Barra de uso en tiempo real, validación antes de confirmar orden
 - **Carga Masiva (Bulk Import):** Importación de SKUs y cantidades via texto plano `ID, CANTIDAD`
 - **Validación de Stock:** Control proactivo al agregar al carrito
-- **Checkout con Generación de Orden:** Estado automático (Aprobado < $5.000 / Pendiente ≥ $5.000)
+- **Checkout con Generación de Orden:** Estado automático (Aprobado < Bs. 5.000 / Pendiente ≥ Bs. 5.000)
 
 ### 📊 Dashboard
 - **Bento Grid de KPIs:** Pedidos del mes, crédito disponible, envíos en tránsito, ahorro B2B
@@ -150,39 +150,43 @@ b2b-core/
 ## ⚡ Instalación y Uso
 
 ### Requisitos
-- Node.js instalado (solo para el servidor de desarrollo)
-- O la extensión **Live Server** en VS Code (alternativa sin Node.js)
+- **Node.js** (para usar el servidor de desarrollo estático `npm run dev`)
+- **Go (Golang)** 1.18+ (para correr el servidor backend API `npm run go-dev` o `go run main.go`)
+- O la extensión **Live Server** de VS Code (para correr de forma 100% estática)
 
-### Pasos
+### Pasos de Ejecución
 
+#### Opción A: Conexión Cliente-Servidor (Go Backend + API REST) — *Recomendado para clases*
+Esta opción levanta un servidor de archivos en Go que a la vez expone una API REST. El frontend se conecta dinámicamente y envía las órdenes en tiempo real:
 ```bash
-# 1. Clona el repositorio
-git clone https://github.com/ByChokeYT/Plataforma-E-commerce-B2B-Stack-y-M-dulos.git
+# 1. Inicia el servidor Go
+go run main.go
+# O alternativamente: npm run go-dev
 
-# 2. Entra al directorio
-cd Plataforma-E-commerce-B2B-Stack-y-M-dulos
+# 2. Entra al navegador
+# → http://localhost:3000
+```
+*Las órdenes que finalices en la web se imprimirán detalladamente en tiempo real en la terminal de tu servidor Go.*
 
-# 3. Inicia el servidor de desarrollo
+#### Opción B: Ejecución Estática Local (Node.js)
+```bash
+# Inicia el servidor estático
 npm run dev
-
-# 4. Abre en el navegador
 # → http://localhost:3000
 ```
 
-### Credenciales de prueba
+#### Opción C: Sin herramientas de terminal (VS Code)
+- Abre la carpeta del proyecto en VS Code.
+- Haz clic en **"Go Live"** (extensión Live Server) en la esquina inferior derecha.
 
+> 🔌 **Nota de Arquitectura Híbrida (Offline Fallback):** La aplicación cuenta con detección automática de red. Si el servidor Go está activo, consume la información de la API. Si el servidor está apagado (ej. se corre vía Live Server), el frontend de forma inteligente conmuta a modo local (Offline), cargando los datos maestros y órdenes directamente desde JavaScript y `localStorage` sin romperse.
+
+### Credenciales de prueba
 | Usuario | Contraseña | Perfil |
 |---|---|---|
-| `C-9901` | cualquiera | Distribuidor — 10% dto., crédito $50.000 |
-| `C-8842` | cualquiera | Partner Premium — 20% dto., crédito $150.000 |
-
-> El sistema valida que el campo de usuario no esté vacío. La contraseña es libre (prototipo demo).
-
-### Alternativas al servidor (sin Node.js)
-| Opción | Cómo usarla |
-|---|---|
-| VS Code Live Server | Instalar extensión → Clic en "Go Live" |
-| Python | `python -m http.server 3000` en la carpeta del proyecto |
+| `C-9901` | cualquiera | Distribuidor — 10% dto., crédito Bs. 50.000 |
+| `C-8842` | cualquiera | Partner Premium — 20% dto., crédito Bs. 150.000 |
+| *Cualquiera* | cualquiera | Invitado B2B — 5% dto., crédito Bs. 30.000 (Generación dinámica) |
 
 ---
 
@@ -203,6 +207,15 @@ let state = {
 ```
 
 `router.js` persiste y restaura este estado en `localStorage` con `saveState()` / `loadState()`.
+
+---
+
+## ☁️ Despliegue en Netlify
+
+El proyecto está diseñado para funcionar perfectamente en plataformas de hosting estático como **Netlify**:
+1. **Build Command (Comando de construcción):** Dejar vacío (no se requiere compilación, es JavaScript vainilla puro).
+2. **Publish Directory (Directorio de publicación):** `.` (el directorio raíz del proyecto).
+3. **Modo de Operación:** Al desplegarse en Netlify, dado que es un servidor estático y no ejecutará el archivo `main.go`, el frontend lo detectará y funcionará en **Modo Offline Fallback** de manera transparente, guardando todo de forma segura en el navegador (`localStorage`).
 
 ---
 

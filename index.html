@@ -22,57 +22,59 @@
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans">
 
-<div id="view-login" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900 overflow-hidden">
-    <div class="absolute inset-0 z-0">
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[var(--mesh-1)] rounded-full blur-[100px] animate-mesh"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[var(--mesh-2)] rounded-full blur-[120px] animate-mesh" style="animation-delay: -5s;"></div>
-        <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-[var(--mesh-3)] rounded-full blur-[80px] animate-mesh" style="animation-delay: -10s;"></div>
-    </div>
-
-    <div class="glass w-full max-w-[420px] p-12 rounded-[2.5rem] relative z-10 mx-4 animate-enter-up border border-white/10 shadow-2xl backdrop-blur-3xl overflow-hidden">
-        <!-- Efectos de brillo interno -->
-        <div class="absolute -top-24 -left-24 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl"></div>
-
+<div id="view-login" class="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden" style="background: radial-gradient(circle at center, #1b2536 0%, #0b0f19 100%) !important;">
+ 
+    <div class="glass-login w-full max-w-[400px] p-10 rounded-3xl relative z-10 mx-4 animate-enter-up border border-white/10 shadow-2xl backdrop-blur-3xl overflow-hidden">
+ 
         <div class="relative z-10 text-center">
-            <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-400 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(37,99,235,0.3)] transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                <i data-lucide="shield-check" class="text-white" size="36"></i>
+            <!-- Isotipo Moderno con Anillo de Pulso Sutil -->
+            <div class="relative w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 bg-blue-500/10 rounded-2xl animate-pulse"></div>
+                <div class="w-12 h-12 bg-slate-900 border border-white/10 rounded-xl flex items-center justify-center shadow-lg">
+                    <i data-lucide="shield-check" class="text-blue-500" size="24"></i>
+                </div>
             </div>
             
-            <h2 class="text-4xl font-black text-white tracking-tighter mb-1">B2B Core</h2>
-            <p class="text-[10px] text-blue-400 font-black uppercase tracking-[0.4em] mb-10">Premium Network Access</p>
-
-            <div class="space-y-5 text-left">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-white/90 uppercase ml-1 tracking-widest">Identificador Corporativo</label>
+            <h2 class="text-3xl font-black text-white tracking-tighter mb-1">B2B Core</h2>
+            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-[0.25em] mb-8">Portal de Abastecimiento B2B</p>
+ 
+            <div class="space-y-4 text-left">
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase ml-1 tracking-widest">Identificador Corporativo</label>
                     <div class="relative group">
-                        <i data-lucide="building-2" class="absolute left-5 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-blue-400 transition-colors" size="18"></i>
+                        <i data-lucide="building-2" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" size="16"></i>
                         <input type="text" id="login-user" placeholder="C-9901" 
-                            class="w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-8 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all text-sm font-bold text-white placeholder:text-white/40">
+                            class="w-full pl-12 pr-5 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all text-xs font-bold text-white placeholder:text-slate-600">
                     </div>
                 </div>
                 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-white/90 uppercase ml-1 tracking-widest">Código de Seguridad</label>
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase ml-1 tracking-widest">Código de Seguridad</label>
                     <div class="relative group">
-                        <i data-lucide="lock" class="absolute left-5 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-blue-400 transition-colors" size="18"></i>
+                        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" size="16"></i>
                         <input type="password" id="login-pass" placeholder="••••••••" 
-                            class="w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-8 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all text-sm font-bold text-white placeholder:text-white/40">
+                            class="w-full pl-12 pr-5 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all text-xs font-bold text-white placeholder:text-slate-600">
                     </div>
                 </div>
             </div>
-
+ 
             <button onclick="handleLogin()" 
-                class="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-4.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:from-blue-500 hover:to-blue-400 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_30px_rgba(37,99,235,0.3)] flex items-center justify-center gap-3 mt-10">
+                class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-blue-500 active:scale-[0.98] transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 mt-8 cursor-pointer border border-blue-500/30">
                 Acceso Corporativo
-                <i data-lucide="arrow-right" size="16"></i>
+                <i data-lucide="arrow-right" size="14"></i>
             </button>
-
-            <div class="mt-10 pt-8 border-t border-white/10 flex flex-col gap-4">
-                <p class="text-[9px] text-white/40 font-black uppercase text-center tracking-widest">Sistemas de Abastecimiento Certificados</p>
-                <div class="flex justify-center gap-3">
-                    <div class="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-[10px] font-bold text-white/40">C-9901</div>
-                    <div class="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-[10px] font-bold text-white/40">C-8842</div>
+ 
+            <div class="mt-8 pt-6 border-t border-white/5 flex flex-col gap-3">
+                <p class="text-[8px] text-slate-500 font-bold uppercase text-center tracking-widest">Acceso Rápido Demo</p>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="document.getElementById('login-user').value='C-9901'; showToast('Distribuidor (C-9901) seleccionado', 'success')" 
+                        class="flex-1 px-3 py-2 bg-white/5 hover:bg-white/10 active:scale-95 rounded-xl border border-white/5 text-[9px] font-semibold text-slate-300 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                        <i data-lucide="user" size="10"></i> C-9901 (Dist.)
+                    </button>
+                    <button onclick="document.getElementById('login-user').value='C-8842'; showToast('Partner Premium (C-8842) seleccionado', 'success')" 
+                        class="flex-1 px-3 py-2 bg-white/5 hover:bg-white/10 active:scale-95 rounded-xl border border-white/5 text-[9px] font-semibold text-slate-300 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                        <i data-lucide="user-check" size="10"></i> C-8842 (Prem.)
+                    </button>
                 </div>
             </div>
         </div>
@@ -85,7 +87,7 @@
     
     <div id="sidebar-slot"></div>
     
-    <main class="flex-1 min-h-screen lg:pl-56 transition-all duration-500" id="main-content">
+    <main class="flex-1 min-h-screen transition-all duration-500" id="main-content">
         <div class="p-4 md:p-8 lg:p-12 max-w-7xl mx-auto">
             <div id="header-slot"></div>
             <div id="page-slot" class="animate-enter-up"></div>

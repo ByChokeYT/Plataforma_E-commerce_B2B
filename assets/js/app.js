@@ -18,7 +18,7 @@
 // ─────────────────────────────────────────────────────────
 // DATOS MAESTROS (simulando respuesta de API)
 // ─────────────────────────────────────────────────────────
-const PRODUCTS = [
+let PRODUCTS = [
     {
         id: 1, name: "Procesador Industrial X-100", category: "Componentes",
         basePrice: 450.00, stock: 120,
@@ -111,7 +111,7 @@ const PRODUCTS = [
     }
 ];
 
-const CUSTOMER_PROFILES = {
+let CUSTOMER_PROFILES = {
     distributor: {
         id: "C-9901", name: "Sistemas Industriales S.A.",
         level: "Distribuidor", discount: 0.10,
@@ -177,6 +177,9 @@ function _set(id, val) {
 
 /** Calcula el precio unitario según tiers y descuento del cliente */
 function calculateUnitPrice(product, quantity) {
+    if (!product || !product.tiers || product.tiers.length === 0) {
+        return (product ? product.basePrice : 0) * (1 - state.user.discount);
+    }
     const tier = [...product.tiers].reverse().find(t => quantity >= t.min);
     const base = tier ? tier.price : product.basePrice;
     return base * (1 - state.user.discount);
@@ -207,15 +210,21 @@ function renderCatalog() {
         return;
     }
 
-    grid.innerHTML = filtered.map(product => `
+    grid.innerHTML = filtered.map(product => {
+        const corpPrice = product.basePrice * (1 - state.user.discount);
+        
+        // Calcular precio mínimo de los tiers con descuento aplicado
+        const hasTiers = product.tiers && product.tiers.length > 1;
+
+        return `
         <div class="card-apple group flex flex-col h-full animate-enter-up">
-            <div class="aspect-square relative overflow-hidden rounded-2xl bg-slate-50 mb-5 shadow-inner">
+            <div class="aspect-square relative overflow-hidden rounded-2xl bg-slate-50 dark:bg-slate-900/50 mb-5 shadow-inner">
                 <img src="${product.image}" alt="${product.name}"
                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop'">
                 
-                <div class="absolute top-3 left-3 px-2.5 py-1 bg-white/80 backdrop-blur-md rounded-lg
-                            text-[10px] font-black text-slate-900 border border-white/40 shadow-sm uppercase tracking-tighter">
+                <div class="absolute top-3 left-3 px-2.5 py-1 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-lg
+                            text-[10px] font-black text-slate-900 dark:text-white border border-white/40 dark:border-white/10 shadow-sm uppercase tracking-tighter">
                     Stock: ${product.stock}
                 </div>
 
@@ -224,26 +233,47 @@ function renderCatalog() {
 
             <div class="flex-1 flex flex-col px-1">
                 <div class="flex items-center gap-2 mb-2">
-                    <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-md">
+                    <span class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-md">
                         ${product.category}
                     </span>
-                    <span class="text-[9px] font-bold text-slate-300 font-mono">ID: ${String(product.id).padStart(4, '0')}</span>
+                    <span class="text-[9px] font-bold text-slate-300 dark:text-slate-600 font-mono">ID: ${String(product.id).padStart(4, '0')}</span>
                 </div>
                 
-                <h3 class="font-bold text-sm text-slate-900 mb-4 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white mb-3 line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     ${product.name}
                 </h3>
+
+                <!-- Descuentos por volumen (B2B Tiers) -->
+                ${hasTiers ? `
+                <div class="mb-4 p-2 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 text-[10px] text-slate-500 dark:text-slate-400">
+                    <p class="font-bold text-[8px] uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1 flex items-center gap-1">
+                        <i data-lucide="tags" size="10"></i> Escala de Precios B2B
+                    </p>
+                    <div class="grid grid-cols-3 gap-1 text-center font-mono">
+                        ${product.tiers.map(t => `
+                            <div class="bg-white dark:bg-slate-800 py-1 rounded border border-slate-100 dark:border-slate-700/50">
+                                <span class="block text-[8px] text-slate-400">${t.min}+ uds</span>
+                                <span class="font-bold text-slate-900 dark:text-white">Bs. ${(t.price * (1 - state.user.discount)).toFixed(0)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : `
+                <div class="mb-4 h-11 flex items-center justify-center border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-[10px] text-slate-400">
+                    Tarifa Plana Corporativa
+                </div>
+                `}
 
                 <div class="mt-auto">
                     <div class="flex items-end gap-2 mb-5">
                         <div class="flex flex-col">
                             <span class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mb-0.5">Precio Corp.</span>
-                            <span class="text-xl font-black text-slate-900 leading-none tracking-tighter">
-                                $${(product.basePrice * (1 - state.user.discount)).toFixed(2)}
+                            <span class="text-xl font-black text-slate-900 dark:text-white leading-none tracking-tighter">
+                                Bs. ${corpPrice.toFixed(2)}
                             </span>
                         </div>
                         <div class="flex flex-col ml-auto text-right">
-                             <span class="text-[9px] text-slate-300 line-through font-bold">$${product.basePrice.toFixed(2)}</span>
+                             <span class="text-[9px] text-slate-300 dark:text-slate-600 line-through font-bold">Bs. ${product.basePrice.toFixed(2)}</span>
                              <span class="text-[10px] font-black text-emerald-500">
                                 -${(state.user.discount * 100).toFixed(0)}%
                             </span>
@@ -251,13 +281,14 @@ function renderCatalog() {
                     </div>
 
                     <button onclick="addToCart(${product.id})"
-                        class="w-full py-3.5 bg-slate-900 text-white rounded-xl text-[11px] font-black uppercase tracking-widest
-                               hover:bg-blue-600 active:scale-[0.98] transition-all shadow-xl shadow-slate-900/5 hover:shadow-blue-500/20">
+                        class="w-full py-3.5 bg-blue-600 text-white rounded-xl text-[11px] font-black uppercase tracking-widest
+                               hover:bg-blue-700 active:scale-[0.98] transition-all shadow-xl shadow-blue-500/10">
                         Añadir al Carrito
                     </button>
                 </div>
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
 
 // ─────────────────────────────────────────────────────────
@@ -291,34 +322,34 @@ function renderCart() {
     cartEl.innerHTML = state.cart.map(item => {
         const unitPrice = calculateUnitPrice(item, item.quantity);
         return `
-            <div class="bg-white p-4 md:p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-5 animate-enter-left
+            <div class="bg-white p-3 md:p-5 rounded-2xl flex flex-row items-center gap-3 md:gap-5 animate-enter-left
                         border border-slate-200/40 shadow-sm text-slate-900">
-                <div class="w-20 h-20 md:w-16 md:h-16 rounded-xl bg-slate-50 p-1 flex-shrink-0">
+                <div class="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-slate-50 p-1 flex-shrink-0">
                     <img src="${item.image}" alt="${item.name}"
                         class="w-full h-full object-cover rounded-lg"
                         onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=100&h=100&fit=crop'">
                 </div>
                 <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-slate-900 text-sm mb-1 leading-tight line-clamp-2">${item.name}</h4>
-                    <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                        $${unitPrice.toFixed(2)} / unidad
+                    <h4 class="font-bold text-slate-900 text-xs md:text-sm mb-0.5 leading-tight line-clamp-2">${item.name}</h4>
+                    <p class="text-[9px] md:text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                        Bs. ${unitPrice.toFixed(2)} / ud
                     </p>
                 </div>
-                <div class="flex items-center bg-slate-100 rounded-xl p-0.5 flex-shrink-0">
+                <div class="flex items-center bg-slate-100 rounded-xl p-0.5 flex-shrink-0 scale-90 md:scale-100">
                     <button onclick="updateQty(${item.id}, -1)"
-                        class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all active:scale-90">
-                        <i data-lucide="minus" size="13"></i>
+                        class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all active:scale-90">
+                        <i data-lucide="minus" size="11"></i>
                     </button>
-                    <span class="px-3 font-bold text-xs text-slate-900 min-w-[2rem] text-center">
+                    <span class="px-2 md:px-3 font-bold text-[11px] md:text-xs text-slate-900 min-w-[1.5rem] md:min-w-[2rem] text-center">
                         ${item.quantity}
                     </span>
                     <button onclick="updateQty(${item.id}, 1)"
-                        class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all active:scale-90">
-                        <i data-lucide="plus" size="13"></i>
+                        class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all active:scale-90">
+                        <i data-lucide="plus" size="11"></i>
                     </button>
                 </div>
-                <div class="text-right flex-shrink-0 min-w-[80px]">
-                    <p class="font-bold text-slate-900 text-sm">$${(unitPrice * item.quantity).toFixed(2)}</p>
+                <div class="text-right flex-shrink-0 min-w-[70px] md:min-w-[80px]">
+                    <p class="font-bold text-slate-900 text-xs md:text-sm">Bs. ${(unitPrice * item.quantity).toFixed(2)}</p>
                 </div>
             </div>`;
     }).join('');
@@ -344,31 +375,46 @@ function calculateTotals() {
     const total = totals.subtotal + tax;
     const fmt   = n => n.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
-    _set('summary-subtotal', `$${fmt(totals.subtotal)}`);
-    _set('summary-savings',  `-$${fmt(totals.savings)}`);
-    _set('summary-tax',      `$${fmt(tax)}`);
-    _set('summary-total',    `$${fmt(total)}`);
+    _set('summary-subtotal', `Bs. ${fmt(totals.subtotal)}`);
+    _set('summary-savings',  `-Bs. ${fmt(totals.savings)}`);
+    _set('summary-tax',      `Bs. ${fmt(tax)}`);
+    _set('summary-total',    `Bs. ${fmt(total)}`);
 
     const percent   = Math.min(100, (state.user.usedCredit / state.user.creditLimit) * 100);
     const creditBar = document.getElementById('credit-bar');
     if (creditBar) creditBar.style.width = `${percent}%`;
     _set('credit-percent', `${Math.round(percent)}%`);
-    _set('credit-used',    `$${state.user.usedCredit.toLocaleString()}`);
-    _set('credit-limit',   `$${state.user.creditLimit.toLocaleString()}`);
+    _set('credit-used',    `Bs. ${state.user.usedCredit.toLocaleString()}`);
+    _set('credit-limit',   `Bs. ${state.user.creditLimit.toLocaleString()}`);
 
     const canAfford = (state.user.creditLimit - state.user.usedCredit) >= total;
     const btn = document.getElementById('checkout-btn');
     if (btn) {
-        btn.disabled = !canAfford && state.cart.length > 0;
-        btn.style.opacity = (!canAfford && state.cart.length > 0) ? '0.5' : '1';
+        btn.disabled = !canAfford || state.cart.length === 0;
+        btn.style.opacity = (!canAfford || state.cart.length === 0) ? '0.5' : '1';
+    }
+    const wsBtn = document.getElementById('whatsapp-btn');
+    if (wsBtn) {
+        wsBtn.disabled = state.cart.length === 0;
+        wsBtn.style.opacity = state.cart.length === 0 ? '0.5' : '1';
     }
 }
 
 function resetTotals() {
-    _set('summary-subtotal', '$0.00');
-    _set('summary-savings',  '-$0.00');
-    _set('summary-tax',      '$0.00');
-    _set('summary-total',    '$0.00');
+    _set('summary-subtotal', 'Bs. 0.00');
+    _set('summary-savings',  '-Bs. 0.00');
+    _set('summary-tax',      'Bs. 0.00');
+    _set('summary-total',    'Bs. 0.00');
+    const btn = document.getElementById('checkout-btn');
+    if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+    }
+    const wsBtn = document.getElementById('whatsapp-btn');
+    if (wsBtn) {
+        wsBtn.disabled = true;
+        wsBtn.style.opacity = '0.5';
+    }
 }
 
 // ─────────────────────────────────────────────────────────
@@ -389,13 +435,13 @@ function renderDashboard() {
               sub: `${state.orders.filter(o => o.status === 'Pendiente').length} pendientes`,
               icon: 'clipboard-list', color: 'blue'    },
             { label: 'Crédito Disponible',
-              value: `$${(state.user.creditLimit - state.user.usedCredit).toLocaleString()}`,
-              sub: `Límite: $${state.user.creditLimit.toLocaleString()}`,
+              value: `Bs. ${(state.user.creditLimit - state.user.usedCredit).toLocaleString()}`,
+              sub: `Límite: Bs. ${state.user.creditLimit.toLocaleString()}`,
               icon: 'wallet',         color: 'emerald' },
             { label: 'En Tránsito', value: '3', sub: 'Entregas esta semana',
               icon: 'truck',          color: 'amber'   },
             { label: 'Ahorro B2B',
-              value: `$${Math.round(state.user.usedCredit * 0.15).toLocaleString()}`,
+              value: `Bs. ${Math.round(state.user.usedCredit * 0.15).toLocaleString()}`,
               sub: `Desc. ${(state.user.discount * 100).toFixed(0)}% activo`,
               icon: 'trending-down',  color: 'purple'  },
         ];
@@ -428,7 +474,7 @@ function renderDashboard() {
             <tr class="hover:bg-slate-50 transition-colors cursor-pointer" onclick="showInvoice('${order.id}')">
                 <td class="px-6 py-3.5 font-bold text-blue-600 font-mono text-xs">${order.id}</td>
                 <td class="px-6 py-3.5 text-[10px] text-slate-400">${order.date}</td>
-                <td class="px-6 py-3.5 font-bold text-slate-900 text-xs">$${order.total.toFixed(2)}</td>
+                <td class="px-6 py-3.5 font-bold text-slate-900 text-xs">Bs. ${order.total.toFixed(2)}</td>
                 <td class="px-6 py-3.5 text-right">
                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold
                         ${order.status === 'Aprobado' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
@@ -448,21 +494,116 @@ function renderDashboard() {
 function renderChart() {
     const chart = document.getElementById('revenue-chart');
     if (!chart) return;
+
     const data   = [30, 45, 25, 60, 80, 55, 90, 65, 85, 40, 75, 90];
-    const months = ['E','F','M','A','M','J','J','A','S','O','N','D'];
-    chart.innerHTML = data.map((val, i) => `
-        <div class="flex-1 group relative flex flex-col items-center justify-end h-full">
-            <div class="w-2 bg-blue-600/10 group-hover:bg-blue-600 transition-all duration-300 rounded-full"
-                 style="height:${val}%"></div>
-            <span class="text-[8px] font-bold text-slate-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                ${months[i]}
-            </span>
-            <div class="absolute -top-8 bg-slate-900 text-white text-[9px] px-2 py-0.5 rounded
-                        opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap">
-                $${(val * 2.4).toFixed(0)}k
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    
+    // Dimensiones del SVG
+    const width = 450;
+    const height = 140;
+    const paddingX = 25;
+    const paddingY = 20;
+
+    const stepX = (width - paddingX * 2) / (data.length - 1);
+    
+    // Mapear datos a coordenadas X e Y
+    const points = data.map((val, i) => {
+        const x = paddingX + i * stepX;
+        const y = height - paddingY - (val / 100) * (height - paddingY * 2);
+        return { x, y, val, month: months[i] };
+    });
+
+    // Generar path del gráfico de línea
+    const dLine = "M " + points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ");
+    
+    // Generar path del gráfico de área (cierra abajo en el eje X)
+    const dArea = dLine + ` L ${points[points.length-1].x.toFixed(1)},${(height - paddingY).toFixed(1)} L ${points[0].x.toFixed(1)},${(height - paddingY).toFixed(1)} Z`;
+
+    // Renderizar el SVG completo
+    chart.innerHTML = `
+        <div class="relative w-full h-full flex flex-col justify-between">
+            <svg viewBox="0 0 ${width} ${height}" class="w-full h-full overflow-visible">
+                <defs>
+                    <!-- Gradiente del área -->
+                    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.25" />
+                        <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.00" />
+                    </linearGradient>
+                    <!-- Gradiente de la línea -->
+                    <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="var(--primary)" />
+                        <stop offset="100%" stop-color="var(--primary)" />
+                    </linearGradient>
+                    <!-- Filtro de sombra para los puntos -->
+                    <filter id="dotShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15" />
+                    </filter>
+                </defs>
+                
+                <!-- Líneas de cuadrícula horizontal -->
+                <line x1="${paddingX}" y1="${paddingY}" x2="${width - paddingX}" y2="${paddingY}" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,4" />
+                <line x1="${paddingX}" y1="${(height / 2).toFixed(1)}" x2="${width - paddingX}" y2="${(height / 2).toFixed(1)}" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,4" />
+                <line x1="${paddingX}" y1="${height - paddingY}" x2="${width - paddingX}" y2="${height - paddingY}" stroke="var(--border)" stroke-width="1" />
+
+                <!-- Eje y etiquetas de meses -->
+                ${points.map(p => `
+                    <text x="${p.x.toFixed(1)}" y="${height - 4}" class="fill-slate-400 font-bold text-[8px]" text-anchor="middle">
+                        ${p.month}
+                    </text>
+                `).join('')}
+
+                <!-- Gráfico de Área -->
+                <path d="${dArea}" fill="url(#areaGrad)" class="animate-fade-in" />
+
+                <!-- Gráfico de Línea -->
+                <path d="${dLine}" fill="none" stroke="url(#lineGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="animate-fade-in" />
+
+                <!-- Puntos interactivos -->
+                ${points.map((p, i) => `
+                    <g class="group/dot cursor-pointer" 
+                       onmouseover="showChartTooltip(event, '${p.month}', 'Bs. ${(p.val * 2.4).toFixed(0)}k')"
+                       onmouseout="hideChartTooltip()">
+                        <!-- Zona sensible al tacto/hover más grande -->
+                        <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="12" fill="transparent" />
+                        <!-- Círculo visual -->
+                        <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4.5" 
+                                class="chart-dot fill-white stroke-[var(--primary)] stroke-2 transition-all duration-200" 
+                                filter="url(#dotShadow)" />
+                    </g>
+                `).join('')}
+            </svg>
+
+            <!-- Tooltip Flotante de HTML -->
+            <div id="chart-tooltip" class="absolute hidden bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-xl shadow-lg border border-slate-700/50 pointer-events-none transform -translate-x-1/2 -translate-y-full transition-all duration-200">
+                <span id="tooltip-text"></span>
             </div>
-        </div>`).join('');
+        </div>
+    `;
 }
+
+// Helpers globales para el tooltip interactivo del gráfico
+window.showChartTooltip = (event, month, value) => {
+    const tooltip = document.getElementById('chart-tooltip');
+    const text = document.getElementById('tooltip-text');
+    if (!tooltip || !text) return;
+
+    // Calcular posición relativa al contenedor
+    const rect = event.currentTarget.getBoundingClientRect();
+    const containerRect = tooltip.parentElement.getBoundingClientRect();
+    
+    const posX = rect.left - containerRect.left + (rect.width / 2);
+    const posY = rect.top - containerRect.top - 6;
+
+    text.innerText = `${month}: ${value}`;
+    tooltip.style.left = `${posX}px`;
+    tooltip.style.top = `${posY}px`;
+    tooltip.classList.remove('hidden');
+};
+
+window.hideChartTooltip = () => {
+    const tooltip = document.getElementById('chart-tooltip');
+    if (tooltip) tooltip.classList.add('hidden');
+};
 
 // ─────────────────────────────────────────────────────────
 // RENDERIZADO: HISTORIAL DE ÓRDENES
@@ -500,16 +641,16 @@ function _renderOrdersFiltered() {
 
     tbody.innerHTML = list.map(order => `
         <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50 group cursor-pointer" onclick="toggleOrderItems('${order.id}')">
-            <td class="px-8 py-5 font-bold text-blue-600 font-mono text-sm">
+            <td class="px-4 py-3.5 md:px-8 md:py-5 font-bold text-blue-600 font-mono text-sm">
                 <div class="flex items-center gap-2">
                     <i data-lucide="chevron-down" size="14" class="text-slate-300 group-hover:text-blue-500 transition-transform" id="icon-${order.id}"></i>
                     ${order.id}
                 </div>
             </td>
-            <td class="px-8 py-5 text-sm text-slate-500 font-medium">${order.date}</td>
-            <td class="px-8 py-5 text-sm font-bold text-slate-700">${order.itemsCount || order.items} prod.</td>
-            <td class="px-8 py-5 font-bold text-slate-900 font-mono">$${order.total.toFixed(2)}</td>
-            <td class="px-8 py-5">
+            <td class="px-4 py-3.5 md:px-8 md:py-5 text-sm text-slate-500 font-medium">${order.date}</td>
+            <td class="px-4 py-3.5 md:px-8 md:py-5 text-sm font-bold text-slate-700">${order.itemsCount || order.items} prod.</td>
+            <td class="px-4 py-3.5 md:px-8 md:py-5 font-bold text-slate-900 font-mono">Bs. ${order.total.toFixed(2)}</td>
+            <td class="px-4 py-3.5 md:px-8 md:py-5">
                 <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter
                     ${order.status === 'Aprobado'
                         ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
@@ -517,7 +658,7 @@ function _renderOrdersFiltered() {
                     ${order.status}
                 </span>
             </td>
-            <td class="px-8 py-5 text-right space-x-1" onclick="event.stopPropagation()">
+            <td class="px-4 py-3.5 md:px-8 md:py-5 text-right space-x-1" onclick="event.stopPropagation()">
                 <button onclick="showInvoice('${order.id}')" title="Ver Factura"
                     class="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-slate-900">
                     <i data-lucide="file-text" size="15"></i>
@@ -529,7 +670,7 @@ function _renderOrdersFiltered() {
             </td>
         </tr>
         <tr id="details-${order.id}" class="hidden bg-slate-50/50">
-            <td colspan="6" class="px-12 py-6">
+            <td colspan="6" class="px-3 py-3 md:px-12 md:py-6">
                 <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
                     <table class="w-full text-left text-[11px]">
                         <thead class="bg-slate-50 text-slate-400 uppercase tracking-widest font-black">
@@ -544,7 +685,7 @@ function _renderOrdersFiltered() {
                                 <tr>
                                     <td class="px-6 py-3 font-bold text-slate-700">${item.name}</td>
                                     <td class="px-6 py-3 text-center font-mono">${item.quantity}</td>
-                                    <td class="px-6 py-3 text-right font-bold text-slate-900">$${(item.basePrice * (1 - state.user.discount)).toFixed(2)}</td>
+                                    <td class="px-6 py-3 text-right font-bold text-slate-900">Bs. ${(item.basePrice * (1 - state.user.discount)).toFixed(2)}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -675,15 +816,15 @@ window.showInvoice = (orderId) => {
         <div class="border-t border-slate-100 pt-8 space-y-4">
             <div class="flex justify-between text-sm">
                 <span class="text-slate-400">Subtotal Neto</span>
-                <span class="font-bold text-slate-900">$${fmt(subtotal)}</span>
+                <span class="font-bold text-slate-900">Bs. ${fmt(subtotal)}</span>
             </div>
             <div class="flex justify-between text-sm">
                 <span class="text-slate-400">IVA (13%)</span>
-                <span class="font-bold text-slate-900">$${fmt(tax)}</span>
+                <span class="font-bold text-slate-900">Bs. ${fmt(tax)}</span>
             </div>
             <div class="flex justify-between items-baseline pt-6 border-t border-slate-900">
                 <span class="text-lg font-bold text-slate-900">Total Facturado</span>
-                <span class="text-3xl font-bold text-blue-600 font-mono">$${fmt(order.total)}</span>
+                <span class="text-3xl font-bold text-blue-600 font-mono">Bs. ${fmt(order.total)}</span>
             </div>
         </div>
         <div class="mt-16 pt-8 border-t border-dashed border-slate-200 text-center">
@@ -717,11 +858,15 @@ window.addToCart = (id) => {
     showToast(`✓ ${product.name}`, 'success');
 
     // Actualizar badge del sidebar sin navegar
-    const badge = document.getElementById('cart-badge');
-    if (badge) {
-        const count = state.cart.reduce((a, i) => a + i.quantity, 0);
-        badge.innerText = count;
-        badge.classList.toggle('hidden', count === 0);
+    if (typeof window.updateCartBadge === 'function') {
+        window.updateCartBadge();
+    } else {
+        const badge = document.getElementById('cart-badge');
+        if (badge) {
+            const count = state.cart.reduce((a, i) => a + i.quantity, 0);
+            badge.innerText = count;
+            badge.classList.toggle('hidden', count === 0);
+        }
     }
 
     if (typeof saveState === 'function') saveState();
@@ -737,12 +882,37 @@ window.updateQty = (id, delta) => {
         return;
     }
 
-    item.quantity = Math.max(1, item.quantity + delta);
+    const newQty = item.quantity + delta;
+    if (newQty <= 0) {
+        state.cart = state.cart.filter(i => i.id !== id);
+        showToast(`Eliminado: ${product.name}`, 'info');
+    } else {
+        item.quantity = newQty;
+    }
+
     renderCart();
+    
+    // Sincronizar badge del sidebar en tiempo real
+    if (typeof window.updateCartBadge === 'function') {
+        window.updateCartBadge();
+    } else {
+        const badge = document.getElementById('cart-badge');
+        if (badge) {
+            const count = state.cart.reduce((a, i) => a + i.quantity, 0);
+            badge.innerText = count;
+            badge.classList.toggle('hidden', count === 0);
+        }
+    }
+
     if (typeof saveState === 'function') saveState();
 };
 
-window.handleCheckout = () => {
+window.handleCheckout = async () => {
+    if (state.cart.length === 0) {
+        showToast('El carrito está vacío', 'error');
+        return;
+    }
+
     const totals = state.cart.reduce((acc, item) => {
         const price = calculateUnitPrice(item, item.quantity);
         return { subtotal: acc.subtotal + (price * item.quantity), items: acc.items + item.quantity };
@@ -769,6 +939,24 @@ window.handleCheckout = () => {
     state.cart = [];
 
     showToast(`Orden ${newOrder.id} generada con éxito`, 'success');
+
+    // Enviar al Go Backend de forma asíncrona (si está disponible)
+    try {
+        fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newOrder)
+        }).then(res => {
+            if (res.ok) {
+                console.log(`[B2B-API] Orden ${newOrder.id} registrada en el backend de Go.`);
+            }
+        }).catch(err => {
+            console.log('[B2B-API] Error de red. Orden registrada localmente (Modo Offline).');
+        });
+    } catch (e) {
+        // Silencioso, fallback local completado
+    }
+
     navigate('dashboard');
 };
 
@@ -826,6 +1014,39 @@ window.sendWhatsAppOrder = () => {
         return acc + calculateUnitPrice(item, item.quantity) * item.quantity;
     }, 0);
     const items   = state.cart.map(i => `• ${i.quantity}x ${i.name}`).join('%0A');
-    const msg     = `Hola, soy de ${state.user.name} (ID: ${state.user.id}).%0AOrdén para negociar:%0A%0A${items}%0A%0ATotal estimado: $${(subtotal * 1.13).toFixed(2)}`;
+    const msg     = `Hola, soy de ${state.user.name} (ID: ${state.user.id}).%0AOrdén para negociar:%0A%0A${items}%0A%0ATotal estimado: Bs. ${(subtotal * 1.13).toFixed(2)}`;
     window.open(`https://wa.me/59178945612?text=${msg}`, '_blank');
+};
+
+// ─── API FETCH: CONEXIÓN DINÁMICA CON EL SERVIDOR GO ─────
+window.initBackendData = async () => {
+    try {
+        const respProducts = await fetch('/api/products');
+        if (respProducts.ok) {
+            const data = await respProducts.json();
+            if (data && data.length > 0) {
+                PRODUCTS = data;
+                console.log('[B2B-API] Productos cargados desde Go Backend.');
+            }
+        }
+    } catch (e) {
+        console.log('[B2B-API] Usando productos locales (Servidor Go offline).');
+    }
+
+    try {
+        const respCustomers = await fetch('/api/customers');
+        if (respCustomers.ok) {
+            const data = await respCustomers.json();
+            if (data && Object.keys(data).length > 0) {
+                CUSTOMER_PROFILES = data;
+                console.log('[B2B-API] Perfiles de cliente cargados desde Go Backend.');
+                // Sincronizar el usuario del estado activo con los nuevos datos
+                if (state.user && state.user.id) {
+                    state.user = CUSTOMER_PROFILES[state.user.id] || state.user;
+                }
+            }
+        }
+    } catch (e) {
+        console.log('[B2B-API] Usando perfiles locales (Servidor Go offline).');
+    }
 };

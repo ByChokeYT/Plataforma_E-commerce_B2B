@@ -4,7 +4,8 @@
   "description": "Plataforma E-commerce B2B de alto rendimiento con HTML Partials + SPA Router",
   "scripts": {
     "start": "npx serve . --listen 3000",
-    "dev": "npx serve . --listen 3000 --cors"
+    "dev": "npx serve . --listen 3000 --cors",
+    "go-dev": "go run main.go"
   },
   "keywords": ["b2b", "ecommerce", "vanilla-js", "spa"],
   "author": "José Luis Choquevillca"

@@ -2,13 +2,16 @@
 <aside class="w-56 glass text-slate-800 flex flex-col h-screen fixed left-0 top-0 z-50 transition-all duration-500 overflow-hidden" id="sidebar">
     <div class="px-8 py-10 flex items-center mb-4 relative z-10">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                <i data-lucide="command" class="text-white" size="18"></i>
+            <!-- Icono con animación de rotación lenta -->
+            <div class="w-8 h-8 bg-slate-900 dark:bg-blue-600 rounded-xl flex items-center justify-center shadow-lg" style="animation: spin-slow 15s linear infinite;">
+                <i data-lucide="command" class="text-white" size="16"></i>
             </div>
-            <span class="font-bold text-lg tracking-tighter text-slate-900">B2B Core</span>
+            <span class="font-bold text-lg tracking-tighter text-slate-900 dark:text-white">B2B Core</span>
         </div>
     </div>
-    <p class="px-8 text-[9px] font-black text-slate-300 uppercase tracking-widest mb-4">Navegación</p>
+    
+    <p class="px-8 text-[9px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest mb-4">Navegación</p>
+    
     <nav class="flex-1 px-4 space-y-1 relative z-10">
         <button onclick="navigate('catalog')" id="nav-catalog" class="nav-btn w-full">
             <i data-lucide="layers" size="16"></i> Catálogo
@@ -24,20 +27,22 @@
             <i data-lucide="clipboard-list" size="16"></i> Órdenes
         </button>
     </nav>
-    <div class="p-4 mx-2 mb-4 bg-white/50 border border-white/50 rounded-3xl relative z-10 overflow-hidden">
+    
+    <!-- Panel del Usuario B2B -->
+    <div class="p-4 mx-2 mb-4 bg-white/40 dark:bg-slate-900/40 border border-white/50 dark:border-slate-800/60 rounded-3xl relative z-10 overflow-hidden backdrop-blur-md">
         <div class="flex items-center gap-3 mb-4">
-            <div class="w-9 h-9 rounded-2xl bg-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-xl" id="user-initial">S</div>
+            <div class="w-9 h-9 rounded-2xl bg-slate-900 dark:bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-xl" id="user-initial">S</div>
             <div class="overflow-hidden">
-                <p class="text-[11px] font-bold text-slate-900 truncate" id="user-name">Sistemas Industriales</p>
-                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider" id="user-level">Distribuidor</p>
+                <p class="text-[11px] font-bold text-slate-900 dark:text-white truncate" id="user-name">Sistemas Industriales</p>
+                <p class="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider" id="user-level">Distribuidor</p>
             </div>
         </div>
         <div class="grid grid-cols-2 gap-1.5">
-            <button onclick="toggleUserProfile()" class="text-[10px] text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl bg-white/50 border border-white hover:shadow-sm">
+            <button onclick="toggleUserProfile()" class="text-[10px] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl bg-white/50 dark:bg-slate-800/40 border border-white dark:border-slate-700/30 hover:shadow-sm">
                 <i data-lucide="refresh-cw" size="10"></i> Cambiar
             </button>
-            <button onclick="toggleTheme()" class="text-[10px] text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl bg-white/50 border border-white hover:shadow-sm">
-                <i data-lucide="sun" size="10" id="theme-btn-icon"></i> Tema
+            <button onclick="toggleTheme()" class="text-[10px] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl bg-white/50 dark:bg-slate-800/40 border border-white dark:border-slate-700/30 hover:shadow-sm">
+                <span id="theme-btn-wrapper" class="flex items-center justify-center"><i data-lucide="sun" size="10" id="theme-btn-icon"></i></span> Tema
             </button>
         </div>
     </div>

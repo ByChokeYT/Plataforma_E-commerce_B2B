@@ -91,6 +91,14 @@ window.navigate = async (view) => {
     if (appShell)  { appShell.classList.remove('hidden'); appShell.classList.add('flex'); }
     document.body.classList.remove('overflow-hidden');
 
+    // Cerrar sidebar en móviles tras navegar
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar && sidebar.classList.contains('show')) {
+        sidebar.classList.remove('show');
+        if (overlay) overlay.classList.add('hidden');
+    }
+
     // Inicializar persistentes si es necesario
     if (!el.pageSlot) initPersistent();
 
@@ -117,6 +125,11 @@ window.navigate = async (view) => {
     
     if (pageSlot && html) {
         pageSlot.innerHTML = html;
+        
+        // Animación de transición fluida
+        pageSlot.classList.remove('animate-fade-in');
+        void pageSlot.offsetWidth; // Forzar reflujo
+        pageSlot.classList.add('animate-fade-in');
         
         // Actualizar header dinámico
         if (el.viewTitle)    el.viewTitle.innerText    = route.title;
@@ -148,7 +161,12 @@ window.navigate = async (view) => {
         }
     } else {
         console.error(`[Router] Error al cargar la página: ${pageUrl}`);
+        if (window.location.protocol === 'file:') {
+            showFatalError("Estás abriendo el index.html directamente (protocolo file://). Por restricciones de seguridad CORS, el navegador bloquea la carga de archivos locales en una Single Page Application (SPA). Para solucionarlo, debes iniciar tu servidor de desarrollo con 'npm run dev' e ingresar a través de http://localhost:3000 o usar Live Server en VS Code.");
+        } else {
+            showFatalError(`Error de carga: No se pudo inyectar el archivo de la vista "${view}". Verifica que el archivo exista en la carpeta pages/ o components/.`);
         }
+    }
     } catch (e) {
         console.error(`[Router] Error crítico en navegación:`, e);
     } finally {
@@ -283,6 +301,7 @@ function _updateCartBadge() {
     badge.innerText = count;
     badge.classList.toggle('hidden', count === 0);
 }
+window.updateCartBadge = _updateCartBadge;
 
 function _updateNav() {
     const btns = el.navBtns || document.querySelectorAll('.nav-btn');
@@ -300,9 +319,15 @@ function _updateUserInfo() {
 }
 
 function _updateThemeIcon() {
-    const icon = el.themeIcon || document.getElementById('theme-btn-icon');
-    if (!icon) return;
-    icon.setAttribute('data-lucide', state.theme === 'light' ? 'moon' : 'sun');
+    const wrapper = document.getElementById('theme-btn-wrapper');
+    if (wrapper) {
+        wrapper.innerHTML = `<i data-lucide="${state.theme === 'light' ? 'moon' : 'sun'}" size="10" id="theme-btn-icon"></i>`;
+    } else {
+        const icon = el.themeIcon || document.getElementById('theme-btn-icon');
+        if (icon) {
+            icon.setAttribute('data-lucide', state.theme === 'light' ? 'moon' : 'sun');
+        }
+    }
     lucide.createIcons();
 }
 
@@ -363,16 +388,46 @@ function loadState() {
 // LOGIN
 // ═══════════════════════════════════════════════════════════
 window.handleLogin = () => {
+    const userEl = document.getElementById('login-user');
+    const userId = userEl ? userEl.value.trim().toUpperCase() : '';
+    
+    if (!userId) {
+        showToast('Por favor ingrese su Identificador Corporativo', 'error');
+        return;
+    }
+    
+    if (userId === 'C-9901') {
+        state.user = CUSTOMER_PROFILES.distributor;
+    } else if (userId === 'C-8842') {
+        state.user = CUSTOMER_PROFILES.premium;
+    } else {
+        // Carga perfil genérico para demostración
+        state.user = {
+            id: userId,
+            name: `Empresa Invitada (${userId})`,
+            level: "Cliente Estándar B2B",
+            discount: 0.05, // 5% de descuento por defecto
+            creditLimit: 30000,
+            usedCredit: 0
+        };
+    }
+    
     state.isLoggedIn = true;
-    showToast(`Bienvenido, ${state.user.name}`, 'success');
+    showToast(`Sesión Iniciada: ${state.user.name}`, 'success');
     navigate('catalog');
 };
 
 // ═══════════════════════════════════════════════════════════
 // ARRANQUE
 // ═══════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     loadState();
+    
+    // Conectar dinámicamente con el Go Backend si está activo
+    if (typeof initBackendData === 'function') {
+        await initBackendData();
+    }
+    
     lucide.createIcons();
 
     if (!state.isLoggedIn) {
