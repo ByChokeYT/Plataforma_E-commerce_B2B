@@ -1,29 +1,30 @@
 <!-- Encabezado Dinámico B2B Core -->
-<header class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 gap-6 relative z-10">
-    <div class="flex items-center gap-4 animate-enter-up">
+<header class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-6 lg:mb-12 gap-4 lg:gap-6 relative z-10">
+    <div class="flex items-center gap-3 animate-enter-up">
         <!-- Botón Menú Hamburguesa para Móviles -->
         <button id="mobile-menu-btn" onclick="toggleSidebar()" 
-            class="lg:hidden p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm">
-            <i data-lucide="menu" size="20"></i>
+            class="lg:hidden p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm">
+            <i data-lucide="menu" size="18"></i>
         </button>
         <div>
-            <h1 class="text-3xl md:text-4xl font-black tracking-tighter text-slate-900 dark:text-white" id="view-title">Catálogo</h1>
-            <p class="text-slate-400 dark:text-slate-500 text-xs md:text-sm font-semibold mt-1 max-w-md" id="view-subtitle">
+            <h1 class="text-2xl md:text-4xl font-black tracking-tighter text-slate-900 dark:text-white" id="view-title">Catálogo</h1>
+            <p class="text-slate-400 dark:text-slate-500 text-[10px] md:text-sm font-semibold mt-0.5 max-w-md" id="view-subtitle">
                 Gestión de suministros industriales con tarifas corporativas.
             </p>
         </div>
     </div>
     
     <!-- Buscador y Acciones -->
-    <div id="search-container" class="flex flex-col sm:flex-row items-center gap-3 animate-enter-up w-full lg:w-auto">
-        <div class="relative group w-full sm:w-80">
-            <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size="18"></i>
-            <input type="text" id="search-input" placeholder="Buscar por SKU o Categoría..." 
-                class="pl-14 pr-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl w-full shadow-sm focus:outline-none focus:ring-[10px] focus:ring-blue-500/5 focus:border-blue-500 transition-all text-sm font-medium placeholder:text-slate-400">
+    <div id="search-container" class="flex flex-row items-center gap-2 animate-enter-up w-full lg:w-auto">
+        <div class="relative group flex-1 lg:w-80">
+            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size="16"></i>
+            <input type="text" id="search-input" placeholder="Buscar por SKU o categoría..." 
+                class="pl-11 pr-4 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl w-full shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all text-xs font-medium placeholder:text-slate-400">
         </div>
         <button onclick="openModal('bulk-import')" 
-            class="flex items-center justify-center gap-3 px-6 py-3.5 w-full sm:w-auto bg-blue-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 active:scale-[0.98] transition-all shadow-xl shadow-blue-500/10 whitespace-nowrap cursor-pointer">
-            <i data-lucide="box" size="16"></i> Carga Masiva
+            class="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 active:scale-[0.98] transition-all shadow-xl shadow-blue-500/10 whitespace-nowrap cursor-pointer flex-shrink-0">
+            <i data-lucide="box" size="14"></i>
+            <span>Carga Masiva</span>
         </button>
     </div>
 </header>

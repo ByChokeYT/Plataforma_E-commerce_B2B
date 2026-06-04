@@ -131,11 +131,17 @@ h4, .h4 { font-size: 1rem; font-weight: 700; }
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: var(--radius-2xl);
-    padding: 1.5rem;
+    padding: 1rem;
     transition: all 0.4s var(--transition-slow);
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 768px) {
+    .card-apple {
+        padding: 1.5rem;
+    }
 }
 
 /* Efecto de borde con gradiente de Figma */
@@ -242,6 +248,13 @@ nav .active i {
     height: 100vh;
     overflow-y: auto;
     scroll-behavior: smooth;
+}
+
+@media (max-width: 1024px) {
+    #main-content {
+        height: auto;
+        overflow-y: visible;
+    }
 }
 
 @media (max-width: 1024px) {
@@ -477,4 +490,36 @@ input:focus, textarea:focus {
     background: var(--bg-input-hover) !important;
     border-color: var(--border-hover) !important;
     transform: translateY(-1px);
+}
+
+/* Glassmorphism Toast Premium */
+.glass-toast {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 20px 40px -5px rgba(15, 23, 42, 0.08), 0 5px 15px -2px rgba(15, 23, 42, 0.04) !important;
+    transition: all 0.4s var(--transition-slow);
+}
+
+[data-theme="dark"] .glass-toast {
+    background: rgba(15, 23, 42, 0.85) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Safe Area Inset Bottom Helper for Mobile Gesture Bars */
+.safe-bottom {
+    padding-bottom: calc(0.625rem + env(safe-area-inset-bottom)) !important;
+}
+
+/* Forzar Barra de Navegación Fija en Celular */
+#mobile-bottom-nav {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 100 !important;
 }

@@ -81,6 +81,8 @@ window.navigate = async (view) => {
     if (!state.isLoggedIn) {
         if (loginView) loginView.classList.remove('hidden');
         if (appShell)  appShell.classList.add('hidden');
+        const mobileBottomNav = document.getElementById('mobile-bottom-nav');
+        if (mobileBottomNav) mobileBottomNav.classList.add('hidden');
         document.body.classList.add('overflow-hidden');
         lucide.createIcons();
         return;
@@ -89,6 +91,8 @@ window.navigate = async (view) => {
     // ─── Con sesión: mostrar app shell ────────────────────
     if (loginView) loginView.classList.add('hidden');
     if (appShell)  { appShell.classList.remove('hidden'); appShell.classList.add('flex'); }
+    const mobileBottomNav = document.getElementById('mobile-bottom-nav');
+    if (mobileBottomNav) mobileBottomNav.classList.remove('hidden');
     document.body.classList.remove('overflow-hidden');
 
     // Cerrar sidebar en móviles tras navegar
@@ -296,16 +300,37 @@ function _renderView(view) {
 // ═══════════════════════════════════════════════════════════
 function _updateCartBadge() {
     const badge = el.cartBadge || document.getElementById('cart-badge');
-    if (!badge) return;
     const count = state.cart.reduce((acc, item) => acc + item.quantity, 0);
-    badge.innerText = count;
-    badge.classList.toggle('hidden', count === 0);
+    if (badge) {
+        badge.innerText = count;
+        badge.classList.toggle('hidden', count === 0);
+    }
+    
+    // Sincronizar badge de carrito en barra móvil
+    const mobileBadge = document.getElementById('mobile-cart-badge');
+    if (mobileBadge) {
+        mobileBadge.innerText = count;
+        mobileBadge.classList.toggle('hidden', count === 0);
+    }
 }
 window.updateCartBadge = _updateCartBadge;
 
 function _updateNav() {
     const btns = el.navBtns || document.querySelectorAll('.nav-btn');
     btns.forEach(btn => btn.classList.toggle('active', btn.id === `nav-${state.view}`));
+
+    // Sincronizar botones de la barra de navegación móvil
+    const mobileBtns = document.querySelectorAll('.mobile-tab-btn');
+    mobileBtns.forEach(btn => {
+        const isActive = btn.id === `mobile-nav-${state.view}`;
+        if (isActive) {
+            btn.classList.add('text-blue-600', 'dark:text-blue-400');
+            btn.classList.remove('text-slate-400', 'dark:text-slate-500');
+        } else {
+            btn.classList.remove('text-blue-600', 'dark:text-blue-400');
+            btn.classList.add('text-slate-400', 'dark:text-slate-500');
+        }
+    });
 }
 
 function _updateUserInfo() {
@@ -337,6 +362,7 @@ function _updateThemeIcon() {
 window.toggleTheme = () => {
     state.theme = state.theme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', state.theme);
+    document.documentElement.classList.toggle('dark', state.theme === 'dark');
     _updateThemeIcon();
     saveState();
 };
@@ -378,6 +404,7 @@ function loadState() {
                 state.user = Object.values(CUSTOMER_PROFILES).find(p => p.id === parsed.user.id) || state.user;
             }
             document.documentElement.setAttribute('data-theme', state.theme);
+            document.documentElement.classList.toggle('dark', state.theme === 'dark');
         }
     } catch (e) {
         console.warn('[Router] Estado corrupto en localStorage, usando defaults.');
@@ -433,6 +460,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!state.isLoggedIn) {
         document.getElementById('view-login')?.classList.remove('hidden');
         document.getElementById('app-shell')?.classList.add('hidden');
+        document.getElementById('mobile-bottom-nav')?.classList.add('hidden');
     } else {
         navigate(state.view || 'catalog');
     }

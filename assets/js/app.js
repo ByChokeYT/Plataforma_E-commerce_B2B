@@ -138,6 +138,7 @@ let state = {
         { id: 'OC-4402', date: '2025-04-02', total: 1250.00, status: 'Pendiente', items: 5  }
     ],
     searchTerm: '',
+    selectedCategory: 'all',
     theme: 'light',
     isLoggedIn: false
 };
@@ -185,18 +186,47 @@ function calculateUnitPrice(product, quantity) {
     return base * (1 - state.user.discount);
 }
 
-// ─────────────────────────────────────────────────────────
-// RENDERIZADO: CATÁLOGO
-// ─────────────────────────────────────────────────────────
+function renderCategoryFilters() {
+    const container = document.getElementById('category-filters-container');
+    if (!container) return;
+
+    // Obtener categorías únicas presentes en la base de datos de productos
+    const categories = ['all', ...new Set(PRODUCTS.map(p => p.category))];
+
+    container.innerHTML = categories.map(cat => {
+        const isActive = (state.selectedCategory || 'all') === cat;
+        const displayName = cat === 'all' ? 'Todos' : cat;
+        return `
+            <button onclick="setCatalogCategory('${cat}')"
+                class="px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 cursor-pointer active:scale-95 ${
+                    isActive
+                    ? 'bg-slate-900 text-white border-slate-900 dark:bg-blue-600 dark:text-white dark:border-blue-600 shadow-md shadow-blue-500/10'
+                    : 'bg-white text-slate-500 border-slate-200 dark:bg-slate-900/60 dark:text-slate-400 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }">
+                ${displayName}
+            </button>
+        `;
+    }).join('');
+}
+
+window.setCatalogCategory = (cat) => {
+    state.selectedCategory = cat;
+    renderCatalog();
+    lucide.createIcons();
+};
+
 function renderCatalog() {
     const grid = document.getElementById('products-grid');
     if (!grid) return;
 
+    renderCategoryFilters();
+
     const term     = (state.searchTerm || '').toLowerCase();
-    const filtered = PRODUCTS.filter(p =>
-        p.name.toLowerCase().includes(term) ||
-        p.category.toLowerCase().includes(term)
-    );
+    const filtered = PRODUCTS.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term);
+        const matchesCategory = !state.selectedCategory || state.selectedCategory === 'all' || p.category === state.selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
 
     if (filtered.length === 0) {
         grid.innerHTML = `
@@ -218,71 +248,71 @@ function renderCatalog() {
 
         return `
         <div onclick="openProductQtyModal(${product.id})" class="card-apple group flex flex-col h-full animate-enter-up cursor-pointer">
-            <div class="aspect-square relative overflow-hidden rounded-2xl bg-slate-50 dark:bg-slate-900/50 mb-5 shadow-inner">
+            <div class="aspect-square relative overflow-hidden rounded-2xl bg-slate-50 dark:bg-slate-900/50 mb-3 md:mb-5 shadow-inner">
                 <img src="${product.image}" alt="${product.name}"
                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop'">
                 
-                <div class="absolute top-3 left-3 px-2.5 py-1 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-lg
-                            text-[10px] font-black text-slate-900 dark:text-white border border-white/40 dark:border-white/10 shadow-sm uppercase tracking-tighter">
+                <div class="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-0.5 md:px-2.5 md:py-1 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-lg
+                            text-[8px] md:text-[10px] font-black text-slate-900 dark:text-white border border-white/40 dark:border-white/10 shadow-sm uppercase tracking-tighter">
                     Stock: ${product.stock}
                 </div>
 
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
 
-            <div class="flex-1 flex flex-col px-1">
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-md">
+            <div class="flex-1 flex flex-col px-0.5">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                    <span class="text-[8px] md:text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-50 dark:bg-blue-950 px-1.5 py-0.5 rounded-md">
                         ${product.category}
                     </span>
-                    <span class="text-[9px] font-bold text-slate-300 dark:text-slate-600 font-mono">ID: ${String(product.id).padStart(4, '0')}</span>
+                    <span class="text-[8px] md:text-[9px] font-bold text-slate-350 dark:text-slate-600 font-mono">ID:${String(product.id).padStart(4, '0')}</span>
                 </div>
                 
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white mb-3 line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3 class="font-bold text-xs md:text-sm text-slate-900 dark:text-white mb-2 line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     ${product.name}
                 </h3>
 
                 <!-- Descuentos por volumen (B2B Tiers) -->
                 ${hasTiers ? `
-                <div class="mb-4 p-2 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 text-[10px] text-slate-500 dark:text-slate-400">
-                    <p class="font-bold text-[8px] uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1 flex items-center gap-1">
-                        <i data-lucide="tags" size="10"></i> Escala de Precios B2B
+                <div class="mb-3 p-1.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 text-[8px] md:text-[10px] text-slate-500 dark:text-slate-400">
+                    <p class="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1 flex items-center gap-1">
+                        <i data-lucide="tags" size="8"></i> Escala B2B
                     </p>
-                    <div class="grid grid-cols-3 gap-1 text-center font-mono">
+                    <div class="grid grid-cols-3 gap-0.5 text-center font-mono">
                         ${product.tiers.map(t => `
-                            <div class="bg-white dark:bg-slate-800 py-1 rounded border border-slate-100 dark:border-slate-700/50">
-                                <span class="block text-[8px] text-slate-400">${t.min}+ uds</span>
+                            <div class="bg-white dark:bg-slate-800 py-0.5 rounded border border-slate-100 dark:border-slate-700/50">
+                                <span class="block text-[6px] md:text-[8px] text-slate-450 dark:text-slate-400">${t.min}+ u</span>
                                 <span class="font-bold text-slate-900 dark:text-white">Bs. ${(t.price * (1 - state.user.discount)).toFixed(0)}</span>
                             </div>
                         `).join('')}
                     </div>
                 </div>
                 ` : `
-                <div class="mb-4 h-11 flex items-center justify-center border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-[10px] text-slate-400">
+                <div class="mb-3 h-9 flex items-center justify-center border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-[8px] md:text-[10px] text-slate-450">
                     Tarifa Plana Corporativa
                 </div>
                 `}
 
                 <div class="mt-auto">
-                    <div class="flex items-end gap-2 mb-5">
+                    <div class="flex items-end gap-1 mb-3">
                         <div class="flex flex-col">
-                            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mb-0.5">Precio Corp.</span>
-                            <span class="text-xl font-black text-slate-900 dark:text-white leading-none tracking-tighter">
-                                Bs. ${corpPrice.toFixed(2)}
+                            <span class="text-[8px] text-slate-450 font-bold uppercase tracking-tighter mb-0.5">Precio Corp.</span>
+                            <span class="text-sm md:text-lg font-black text-slate-900 dark:text-white leading-none tracking-tighter">
+                                Bs. ${corpPrice.toFixed(0)}
                             </span>
                         </div>
                         <div class="flex flex-col ml-auto text-right">
-                             <span class="text-[9px] text-slate-300 dark:text-slate-600 line-through font-bold">Bs. ${product.basePrice.toFixed(2)}</span>
-                             <span class="text-[10px] font-black text-emerald-500">
+                             <span class="text-[8px] md:text-[10px] text-slate-350 dark:text-slate-650 line-through font-bold">Bs. ${product.basePrice.toFixed(0)}</span>
+                             <span class="text-[9px] md:text-[10px] font-black text-emerald-500">
                                 -${(state.user.discount * 100).toFixed(0)}%
                             </span>
                         </div>
                     </div>
 
                     <button onclick="event.stopPropagation(); openProductQtyModal(${product.id})"
-                        class="btn-premium w-full py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest active:scale-[0.98] transition-all">
-                        Añadir al Carrito
+                        class="btn-premium w-full py-2 md:py-3.5 rounded-xl text-[9px] md:text-[11px] font-black uppercase tracking-widest active:scale-[0.98] transition-all">
+                        + Añadir
                     </button>
                 </div>
             </div>
@@ -447,19 +477,19 @@ function renderDashboard() {
             const c = COLOR_MAP[s.color];
             return `
             <div class="card-apple group animate-enter-up">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="w-12 h-12 ${c.icon} rounded-2xl flex items-center justify-center shadow-xl shadow-slate-900/10 group-hover:scale-110 transition-transform duration-500">
-                        <i data-lucide="${s.icon}" class="text-white" size="22"></i>
+                <div class="flex justify-between items-start mb-3 md:mb-6">
+                    <div class="w-9 h-9 md:w-12 md:h-12 ${c.icon} rounded-xl md:rounded-2xl flex items-center justify-center shadow-xl shadow-slate-900/10 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="${s.icon}" class="text-white" size="18"></i>
                     </div>
                 </div>
                 <div class="space-y-1">
-                    <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">${s.label}</p>
-                    <p class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">${s.value}</p>
-                    <div class="flex items-center gap-2 pt-2">
-                        <span class="text-[9px] font-black uppercase tracking-widest ${c.text} ${c.bg} px-2 py-0.5 rounded-md">
+                    <p class="text-[8px] md:text-[10px] text-slate-400 font-black uppercase tracking-widest">${s.label}</p>
+                    <p class="text-base sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tighter truncate">${s.value}</p>
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1.5">
+                        <span class="text-[8px] md:text-[9px] font-black uppercase tracking-widest ${c.text} ${c.bg} px-1.5 py-0.5 rounded-md">
                             ${c.badge}
                         </span>
-                        <p class="text-[10px] ${c.text} font-bold tracking-tight">${s.sub}</p>
+                        <p class="text-[8px] md:text-[10px] ${c.text} font-bold tracking-tight">${s.sub}</p>
                     </div>
                 </div>
             </div>`;
@@ -496,8 +526,23 @@ function renderDashboard() {
 
     if (gaugeCircle) {
         // Circumference = 2 * PI * r = 2 * 3.14159 * 40 = 251.2
-        const strokeDashOffset = 251.2 - (251.2 * percent) / 100;
-        gaugeCircle.style.strokeDashoffset = strokeDashOffset;
+        // Establecer a vacío primero para forzar la animación de llenado
+        gaugeCircle.style.strokeDashoffset = '251.2';
+        
+        // Determinar el color del indicador según el porcentaje usado
+        let strokeColor = 'var(--primary)';
+        if (percent > 85) {
+            strokeColor = 'var(--danger)';
+        } else if (percent > 50) {
+            strokeColor = 'var(--warning)';
+        }
+        gaugeCircle.setAttribute('stroke', strokeColor);
+
+        // Animar el trazo
+        setTimeout(() => {
+            const strokeDashOffset = 251.2 - (251.2 * percent) / 100;
+            gaugeCircle.style.strokeDashoffset = strokeDashOffset;
+        }, 50);
     }
     if (gaugePercent) gaugePercent.innerText = `${Math.round(percent)}%`;
     if (gaugeUsed) gaugeUsed.innerText = `Bs. ${used.toLocaleString()}`;
@@ -706,8 +751,8 @@ function _renderOrdersFiltered() {
                     ${order.id}
                 </div>
             </td>
-            <td class="px-4 py-3.5 md:px-8 md:py-5 text-sm text-slate-500 font-medium">${order.date}</td>
-            <td class="px-4 py-3.5 md:px-8 md:py-5 text-sm font-bold text-slate-700">${order.itemsCount || order.items} prod.</td>
+            <td class="hidden sm:table-cell px-4 py-3.5 md:px-8 md:py-5 text-sm text-slate-500 font-medium">${order.date}</td>
+            <td class="hidden md:table-cell px-4 py-3.5 md:px-8 md:py-5 text-sm font-bold text-slate-700">${order.itemsCount || order.items} prod.</td>
             <td class="px-4 py-3.5 md:px-8 md:py-5 font-bold text-slate-900 font-mono">Bs. ${order.total.toFixed(2)}</td>
             <td class="px-4 py-3.5 md:px-8 md:py-5">
                 <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter
@@ -1153,8 +1198,8 @@ window.openProductQtyModal = (productId) => {
                     <i data-lucide="tags" size="10"></i> Escala de Precios B2B
                 </p>
                 <div class="grid grid-cols-3 gap-2 text-center font-mono">
-                    ${product.tiers.map(t => `
-                        <div class="bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-100 dark:border-slate-700/60">
+                    ${product.tiers.map((t, idx) => `
+                        <div id="modal-tier-${idx}" class="bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-100 dark:border-slate-700/60 transition-all duration-300">
                             <span class="block text-[8px] text-slate-450 dark:text-slate-400 font-bold">${t.min}+ uds</span>
                             <span class="font-bold text-[11px] text-slate-900 dark:text-white">Bs. ${(t.price * (1 - state.user.discount)).toFixed(0)}</span>
                         </div>
@@ -1194,6 +1239,7 @@ window.updateModalTotals = () => {
     const unitPriceEl = document.getElementById('modal-prod-unit-price');
     const subtotalEl = document.getElementById('modal-prod-subtotal');
     const addBtn = document.getElementById('modal-add-btn');
+    const savingAlertEl = document.getElementById('modal-prod-saving-alert');
 
     if (!qtyInput || !state.selectedProduct) return;
 
@@ -1216,6 +1262,43 @@ window.updateModalTotals = () => {
 
     if (unitPriceEl) unitPriceEl.innerText = `Bs. ${unitPrice.toFixed(2)}`;
     if (subtotalEl) subtotalEl.innerText = `Bs. ${subtotal.toFixed(2)}`;
+
+    // Resaltar active tier
+    let activeTierIdx = -1;
+    if (product.tiers && product.tiers.length > 0) {
+        for (let i = product.tiers.length - 1; i >= 0; i--) {
+            if (qty >= product.tiers[i].min) {
+                activeTierIdx = i;
+                break;
+            }
+        }
+        product.tiers.forEach((t, idx) => {
+            const tierEl = document.getElementById(`modal-tier-${idx}`);
+            if (tierEl) {
+                if (idx === activeTierIdx) {
+                    tierEl.className = "bg-blue-50/80 dark:bg-blue-950/40 p-2 rounded-xl border-2 border-blue-500 shadow-md shadow-blue-500/10 scale-105 transition-all duration-300 font-bold";
+                    tierEl.style.opacity = "1";
+                } else {
+                    tierEl.className = "bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-100 dark:border-slate-700/60 transition-all duration-300 opacity-50 scale-100";
+                    tierEl.style.opacity = "";
+                }
+            }
+        });
+    }
+
+    // Calcular ahorro total
+    const baseUnitNoDiscount = product.basePrice;
+    const totalSaving = (baseUnitNoDiscount - unitPrice) * qty;
+
+    if (savingAlertEl) {
+        if (totalSaving > 0) {
+            savingAlertEl.classList.remove('hidden');
+            savingAlertEl.innerHTML = `<i data-lucide="sparkles" class="text-emerald-500" size="12"></i> Ahorro total corporativo: <strong class="font-mono ml-1">Bs. ${totalSaving.toFixed(2)}</strong>`;
+            lucide.createIcons();
+        } else {
+            savingAlertEl.classList.add('hidden');
+        }
+    }
 
     // Controlar botón de añadir
     if (addBtn) {
